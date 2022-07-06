@@ -61,11 +61,14 @@ void Minimax::checkBoundaries(const Board& board, const Snake& player) {
     std::cout << " height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
     if (player.head.x == 0) {
         this->m_possibleMoves.left = false;
-    } else if (player.head.x == board.width - 1) {
+    } 
+    if (player.head.x == board.width - 1) {
         this->m_possibleMoves.right = false;
-    } else if (player.head.y == 0) {
+    }
+    if (player.head.y == 0) {
         this->m_possibleMoves.down = false;
-    } else if (player.head.y  == board.height - 1) { 
+    }
+    if (player.head.y  == board.height - 1) { 
         this->m_possibleMoves.up = false;
     }
 }
