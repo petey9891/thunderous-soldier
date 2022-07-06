@@ -10,7 +10,7 @@ using namespace std;
 using namespace nlohmann;
 
 // Used to enable debug printouts.
-const bool debug = true;
+const bool debug = false;
 const bool print_move = true;
 
 void from_json(const json& j, Point& p) {
@@ -39,13 +39,13 @@ void from_json(const json& j, Board& b) {
 string direction_to_string(const Direction d) {
     switch(d) {
     case Direction::up:
-        return "up";
+        return "{ \"move\": \"up\" }";
     case Direction::left:
-        return "left";
+        return "{ \"move\": \"left\" }";
     case Direction::down:
-        return "down";
+        return "{ \"move\": \"down\" }";
     case Direction::right:
-        return "right";
+        return "{ \"move\": \"right\" }";
     }
 }
 
