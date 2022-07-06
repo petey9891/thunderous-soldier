@@ -21,5 +21,5 @@ private:
     Point getHead(Snake snake);
     Point getNeck(Snake snake);
 
-    void checkBoundaries(const Board& board, const Snake& player, PossibleMoves& moves);
+    void checkBoundaries(const Board& board, const Snake& player);
 };

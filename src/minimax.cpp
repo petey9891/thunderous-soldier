@@ -18,7 +18,7 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
 
     // TODO: Step 1 - Don't hit walls.
     // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
-    this->checkBoundaries(board, player, this->m_possibleMoves);
+    this->checkBoundaries(board, player);
 
     // TODO: Step 2 - Don't hit yourself.
     // Use information in gameState to prevent your Battlesnake from colliding with itself.
@@ -53,15 +53,15 @@ Point Minimax::getNeck(Snake snake) {
 };
 
 
-void Minimax::checkBoundaries(const Board& board, const Snake& player, PossibleMoves& moves) {
+void Minimax::checkBoundaries(const Board& board, const Snake& player) {
     std::cout << "height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
     if (player.head.x == 0) {
-        moves.left = false;
+        this->m_possibleMoves.left = false;
     } else if (player.head.x + 1 == board.width - 1) {
-        moves.right = false;
+        this->m_possibleMoves.right = false;
     } else if (player.head.y == 0) {
-        moves.down = false;
+        this->m_possibleMoves.down = false;
     } else if (player.head.y + 1 == board.height - 1) { 
-        moves.up = false;
+        this->m_possibleMoves.up = false;
     }
 }
