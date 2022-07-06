@@ -2,6 +2,8 @@
 #include <iostream>
 
 Direction Minimax::minimax(const Board& board, const Snake& player) {
+    this->m_possibleMoves = PossibleMoves();
+
     Point head = this->getHead(board.snakes[0]);
     Point neck = this->getNeck(board.snakes[0]);
     std::cout << "Start up: " << this->m_possibleMoves.up << " down: " << this->m_possibleMoves.down << " left: " << this->m_possibleMoves.left << " right: " << this->m_possibleMoves.right << std::endl;
