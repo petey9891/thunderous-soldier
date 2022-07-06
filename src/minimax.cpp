@@ -1,25 +1,24 @@
-#include "minimax.h"
+#include "minimax.hpp"
 #include <iostream>
 
 Minimax::Minimax() {
     // do nothing
 };
 
-Point Minimax::getHead(Round data) {
-    return data.you.head;
+Point Minimax::getHead(Snake snake) {
+    return snake.head;
 };
 
-Point Minimax::getNeck(Round data) {
-    return data.you.body[1];
+Point Minimax::getNeck(Snake snake) {
+    return snake.body[1];
 };
 
-string Minimax::minimax(json data) {
-    Point head = this->getHead((Round) data);
-    Point neck = this->getNeck((Round) data);
+string Minimax::minimax(Board board) {
+    Point head = this->getHead(board.snakes[0]);
+    Point neck = this->getNeck(board.snakes[0]);
 
-    cout << "sup";
-    cout << "\n\n";
-    // printf("x:%d, y:%d", head.x, head.y);
+    cout << head.x << " " << head.y << endl;
+    cout << neck.x << " " << neck.y << endl;
 
     return "right";
 };

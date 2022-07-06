@@ -1,0 +1,92 @@
+#include <string.h>
+#include <iostream>
+
+#include "json.hpp"
+#include "battlesnake.hpp"
+#include "router.hpp"
+#include "minimax.hpp"
+
+using namespace std;
+using namespace nlohmann;
+
+// Used to enable debug printouts.
+const bool debug = false;
+const bool print_move = true;
+
+void from_json(const json& j, Point& p) {
+  p.x = j["x"].get<Index>();
+  p.y = j["y"].get<Index>();
+}
+
+void from_json(const json& j, Snake& s) {
+  s.body = j["body"].get<Points>();
+  s.head = j["head"].get<Point>();
+  s.health = j["health"].get<int>();
+  s.id = j["id"].get<std::string>();
+  s.length = j["length"].get<int>();
+  s.name = j["name"].get<std::string>();
+}
+
+void from_json(const json& j, Board& b) {
+  b.height = j["height"].get<int>();
+  b.width = j["width"].get<int>();
+  b.food = j["food"].get<Points>();
+  b.hazards = j["hazards"].get<Points>();
+  b.snakes = j["snakes"].get<Snakes>();
+}
+
+void to_json(json& j, const Direction& m) {
+  switch(m) {
+  case Direction::up:
+      j = "up";
+      break;
+  case Direction::left:
+      j = "left";
+      break;
+  case Direction::down:
+      j = "down";
+      break;
+  case Direction::right:
+      j = "right";
+      break;
+  }
+}
+
+void Net::Router::handleRoutes(httplib::Server& server) {
+  server.Get("/", [](const auto &, auto &res) {
+    string head = "default";
+    string tail = "default";
+    string author = "petey9891";
+    string color = "#888888"; 
+    res.set_content("{\"apiversion\":\"1\", \"head\":\"" + head + "\", \"tail\":\"" + tail + "\", \"color\":\"" + color + "\", " + "\"author\":\"" + author + "\"}", "application/json");
+  });
+  
+  server.Post("/end", [](const auto &, auto &res){
+    res.set_content("ok", "text/plain");
+  });
+  
+  server.Post("/start", [](const auto &, auto &res){
+    res.set_content("ok", "text/plain");
+  });
+  
+  server.Post("/move", [](auto &req, auto &res){
+    try {
+
+      json data = json::parse(req.body);
+
+      if (debug) {
+        std::cout << "*************** MOVE ******************" << std::endl;
+        std::cout << data.dump(4) << std::endl;
+      }
+      
+      // Snake snake = data["you"].get<Snake>();
+      Board board = data["board"].get<Board>();
+
+      Minimax paranoid;
+      res.set_content("{\"move\": \"" + paranoid.minimax(board) + "\"}", "text/plain");
+      res.set_content("{\"move\": \"right\"}", "text/plain");
+    } catch (const std::exception& e) {
+        cout << "Caught exception \"" << e.what() << "\"\n";
+    }
+  });
+}
