@@ -55,13 +55,13 @@ Point Minimax::getNeck(Snake snake) {
 
 void Minimax::checkBoundaries(const Board& board, const Snake& player, PossibleMoves& moves) {
     std::cout << "height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
-    if (player.head.x == 1) {
+    if (player.head.x == 0) {
         moves.left = false;
     } else if (player.head.x + 1 == board.width) {
         moves.right = false;
-    } else if (player.head.y == 1) {
-        moves.up = false;
-    } else if (player.head.y + 1 == board.height) { 
+    } else if (player.head.y == 0) {
         moves.down = false;
+    } else if (player.head.y + 1 == board.height) { 
+        moves.up = false;
     }
 }
