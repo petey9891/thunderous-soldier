@@ -83,7 +83,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Direction move = paranoid.minimax(board, player);
 
             if (print_move) {
-                std::cout << "*************** MOVE ******************" << std::endl;
+                std::cout << "*************** TURN " << data["turn"] << " ******************" << std::endl;
                 std::cout << direction_to_string(move) << endl;
             }
 

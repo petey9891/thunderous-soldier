@@ -3,24 +3,8 @@
 
 Direction Minimax::minimax(const Board& board, const Snake& player) {
     this->m_possibleMoves = PossibleMoves();
-
-    Point head = this->getHead(board.snakes[0]);
-    Point neck = this->getNeck(board.snakes[0]);
-    // Don't move back on your own neck
-    if (neck.x < head.x) {
-        this->m_possibleMoves.left = false;
-    } else if (neck.x > head.x) {
-        this->m_possibleMoves.right = false;
-    } else if (neck.y < head.y) {
-        this->m_possibleMoves.down = false;
-    } else if (neck.y > head.y) {
-        this->m_possibleMoves.up = false;
-    }
-
-    std::cout << "Moves after check neck - up: " << this->m_possibleMoves.up << " down: " << this->m_possibleMoves.down << " left: " << this->m_possibleMoves.left << " right: " << this->m_possibleMoves.right << std::endl;
-
-    // TODO: Step 1 - Don't hit walls.
-    // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
+  
+    this->checkNeck(player);
     this->checkBoundaries(board, player);
 
     // TODO: Step 2 - Don't hit yourself.
@@ -33,7 +17,10 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
     // TODO: Step 4 - Find food.
     // Use information in gameState to seek out and find food.
 
-    std::cout << "Moves after boundry check - up: " << this->m_possibleMoves.up << " down: " << this->m_possibleMoves.down << " left: " << this->m_possibleMoves.left << " right: " << this->m_possibleMoves.right << std::endl;
+    return this->move();
+};
+
+Direction Minimax::move() const {
     if (this->m_possibleMoves.up) {
         return Direction::up;
     } else if (this->m_possibleMoves.down) {
@@ -42,11 +29,10 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
         return Direction::left;
     } else if (this->m_possibleMoves.right) {
         return Direction::right;
+    } else {
+      return Direction::right;
     }
-
-    // Pick a random direction
-    return Direction::right;
-};
+}
 
 Point Minimax::getHead(Snake snake) {
     return snake.head;
@@ -56,9 +42,26 @@ Point Minimax::getNeck(Snake snake) {
     return snake.body[1];
 };
 
+// Don't move back on your own neck
+void Minimax::checkNeck(const Snake& player) {
+    Point head = this->getHead(player);
+    Point neck = this->getNeck(player);
+    
+    if (neck.x < head.x) {
+        this->m_possibleMoves.left = false;
+    } else if (neck.x > head.x) {
+        this->m_possibleMoves.right = false;
+    } else if (neck.y < head.y) {
+        this->m_possibleMoves.down = false;
+    } else if (neck.y > head.y) {
+        this->m_possibleMoves.up = false;
+    }
+
+    this->logPossibleMoves("checkNeck");
+}
 
 void Minimax::checkBoundaries(const Board& board, const Snake& player) {
-    std::cout << " height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
+    // std::cout << " height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
     if (player.head.x == 0) {
         this->m_possibleMoves.left = false;
     } 
@@ -71,4 +74,18 @@ void Minimax::checkBoundaries(const Board& board, const Snake& player) {
     if (player.head.y  == board.height - 1) { 
         this->m_possibleMoves.up = false;
     }
+    
+    this->logPossibleMoves("checkBoundaries");
 }
+
+void Minimax::logPossibleMoves(const std::string location) const {
+    printf("[PossibleMoves:%s]: up: %d - down: %d - left: %d - right: %d\n", 
+        location.c_str(), 
+        this->m_possibleMoves.up, 
+        this->m_possibleMoves.down, 
+        this->m_possibleMoves.left, 
+        this->m_possibleMoves.right
+    );
+}
+
+    
