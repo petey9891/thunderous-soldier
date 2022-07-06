@@ -16,16 +16,6 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
         this->m_possibleMoves.up = false;
     }
 
-    if (this->m_possibleMoves.up) {
-        return Direction::up;
-    } else if (this->m_possibleMoves.down) {
-        return Direction::down;
-    } else if (this->m_possibleMoves.left) {
-        return Direction::left;
-    } else if (this->m_possibleMoves.right) {
-        return Direction::right;
-    }
-
     // TODO: Step 1 - Don't hit walls.
     // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
     this->checkBoundaries(board, player, this->m_possibleMoves);
@@ -39,6 +29,16 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
 
     // TODO: Step 4 - Find food.
     // Use information in gameState to seek out and find food.
+
+    if (this->m_possibleMoves.up) {
+        return Direction::up;
+    } else if (this->m_possibleMoves.down) {
+        return Direction::down;
+    } else if (this->m_possibleMoves.left) {
+        return Direction::left;
+    } else if (this->m_possibleMoves.right) {
+        return Direction::right;
+    }
 
     // Pick a random direction
     return Direction::right;
