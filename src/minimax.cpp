@@ -4,7 +4,7 @@
 Direction Minimax::minimax(const Board& board, const Snake& player) {
     Point head = this->getHead(board.snakes[0]);
     Point neck = this->getNeck(board.snakes[0]);
-
+    std::cout << "Start up: " << this->m_possibleMoves.up << " down: " << this->m_possibleMoves.down << " left: " << this->m_possibleMoves.left << " right: " << this->m_possibleMoves.right << std::endl;
     // Don't move back on your own neck
     if (neck.x < head.x) {
         this->m_possibleMoves.left = false;
@@ -15,6 +15,9 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
     } else if (neck.y > head.y) {
         this->m_possibleMoves.up = false;
     }
+
+    std::cout << "Post-check neck up: " << this->m_possibleMoves.up << " down: " << this->m_possibleMoves.down << " left: " << this->m_possibleMoves.left << " right: " << this->m_possibleMoves.right << std::endl;
+
 
     // TODO: Step 1 - Don't hit walls.
     // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
@@ -30,6 +33,7 @@ Direction Minimax::minimax(const Board& board, const Snake& player) {
     // TODO: Step 4 - Find food.
     // Use information in gameState to seek out and find food.
 
+    std::cout << "Post-check boundaries up: " << this->m_possibleMoves.up << " down: " << this->m_possibleMoves.down << " left: " << this->m_possibleMoves.left << " right: " << this->m_possibleMoves.right << std::endl;
     if (this->m_possibleMoves.up) {
         return Direction::up;
     } else if (this->m_possibleMoves.down) {
@@ -54,14 +58,14 @@ Point Minimax::getNeck(Snake snake) {
 
 
 void Minimax::checkBoundaries(const Board& board, const Snake& player) {
-    std::cout << "height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
+    std::cout << " height: " << board.height << " width: " << board.width << " x: " << player.head.x << " y: " << player.head.y << std::endl;
     if (player.head.x == 0) {
         this->m_possibleMoves.left = false;
-    } else if (player.head.x + 1 == board.width - 1) {
+    } else if (player.head.x == board.width - 1) {
         this->m_possibleMoves.right = false;
     } else if (player.head.y == 0) {
         this->m_possibleMoves.down = false;
-    } else if (player.head.y + 1 == board.height - 1) { 
+    } else if (player.head.y  == board.height - 1) { 
         this->m_possibleMoves.up = false;
     }
 }
