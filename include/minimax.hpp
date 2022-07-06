@@ -2,17 +2,6 @@
 
 #include "battlesnake.hpp"
 class Minimax {
-
-public:
-    Minimax();
-
-public:
-    Direction minimax(Board board); 
-
-private:
-    Point getHead(Snake snake);
-    Point getNeck(Snake snake);
-
 private:
     struct PossibleMoves {
         bool up = true;
@@ -20,4 +9,17 @@ private:
         bool left = true;
         bool right = true;
     } m_possibleMoves;
+
+
+public:
+    Minimax() = default;
+
+public:
+    Direction minimax(const Board& board, const Snake& player); 
+
+private:
+    Point getHead(Snake snake);
+    Point getNeck(Snake snake);
+
+    void checkBoundaries(const Board& board, const Snake& player, PossibleMoves& moves);
 };

@@ -36,7 +36,7 @@ void from_json(const json& j, Board& b) {
 }
 
 
-string to_direction(const Direction d) {
+string direction_to_string(const Direction d) {
     switch(d) {
     case Direction::up:
         return "up";
@@ -77,9 +77,17 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             // Snake snake = data["you"].get<Snake>();
             Board board = data["board"].get<Board>();
+            Snake player = data["you"].get<Snake>();
 
             Minimax paranoid;
-            res.set_content(to_direction(paranoid.minimax(board)), "text/plain");
+            Direction move = paranoid.minimax(board, player);
+
+            if (print_move) {
+                std::cout << "*************** MOVE ******************" << std::endl;
+                std::cout << move << endl;
+            }
+
+            res.set_content(direction_to_string(move), "text/plain");
         } catch (const std::exception& e) {
             cout << "Caught exception \"" << e.what() << "\"\n";
         }

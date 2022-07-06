@@ -1,19 +1,7 @@
 #include "minimax.hpp"
 #include <iostream>
 
-Minimax::Minimax() {
-    // do nothing
-};
-
-Point Minimax::getHead(Snake snake) {
-    return snake.head;
-};
-
-Point Minimax::getNeck(Snake snake) {
-    return snake.body[1];
-};
-
-Direction Minimax::minimax(Board board) {
+Direction Minimax::minimax(const Board& board, const Snake& player) {
     Point head = this->getHead(board.snakes[0]);
     Point neck = this->getNeck(board.snakes[0]);
 
@@ -38,6 +26,41 @@ Direction Minimax::minimax(Board board) {
         return Direction::right;
     }
 
+    // TODO: Step 1 - Don't hit walls.
+    // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
+    this->checkBoundaries(board, player, this->m_possibleMoves);
+
+    // TODO: Step 2 - Don't hit yourself.
+    // Use information in gameState to prevent your Battlesnake from colliding with itself.
+    // const mybody = gameState.you.body
+
+    // TODO: Step 3 - Don't collide with others.
+    // Use information in gameState to prevent your Battlesnake from colliding with others.
+
+    // TODO: Step 4 - Find food.
+    // Use information in gameState to seek out and find food.
+
     // Pick a random direction
     return Direction::right;
 };
+
+Point Minimax::getHead(Snake snake) {
+    return snake.head;
+};
+
+Point Minimax::getNeck(Snake snake) {
+    return snake.body[1];
+};
+
+
+void Minimax::checkBoundaries(const Board& board, const Snake& player, PossibleMoves& moves) {
+    if (player.head.x == 1) {
+        moves.left = false;
+    } else if (player.head.x + 1 == board.width) {
+        moves.right = false;
+    } else if (player.head.y == 1) {
+        moves.up = false;
+    } else if (player.head.y + 1 == board.height) { 
+        moves.down = false;
+    }
+}
