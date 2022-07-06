@@ -84,7 +84,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             if (print_move) {
                 std::cout << "*************** MOVE ******************" << std::endl;
-                std::cout << move << endl;
+                std::cout << direction_to_string(move) << endl;
             }
 
             res.set_content(direction_to_string(move), "text/plain");
