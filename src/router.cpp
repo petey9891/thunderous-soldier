@@ -10,7 +10,7 @@ using namespace std;
 using namespace nlohmann;
 
 // Used to enable debug printouts.
-const bool debug = false;
+const bool debug = true;
 const bool print_move = true;
 
 void from_json(const json& j, Point& p) {
