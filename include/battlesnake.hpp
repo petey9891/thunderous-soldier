@@ -10,12 +10,31 @@ enum class Direction {
     down
 };
 
+inline std::ostream & operator<<(std::ostream &os, const Direction& d)
+{
+    switch(d) {
+    case Direction::up:
+        os << "up";
+        break;
+    case Direction::left:
+        os << "left";
+        break;
+    case Direction::down:
+        os << "down";
+        break;
+    case Direction::right:
+        os << "right";
+        break;
+    }
+    return os;
+}
+
 // Used for positions on board, to make it easier to switch integer type.
 using Index = int;
 
 struct Point {
     Point() {};
-    Point (const Index x, const Index y) : x(x), y(y) {}
+    Point (const Index t_x, const Index t_y) : x(t_x), y(t_y) {}
 
     Index x = 0;
     Index y = 0;

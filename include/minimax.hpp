@@ -1,19 +1,23 @@
 #pragma once
 
 #include "battlesnake.hpp"
-
-using namespace std;
-using namespace nlohmann;
-
 class Minimax {
 
 public:
     Minimax();
 
 public:
-    string minimax(Board board); 
+    Direction minimax(Board board); 
 
 private:
     Point getHead(Snake snake);
     Point getNeck(Snake snake);
+
+private:
+    struct PossibleMoves {
+        bool up = true;
+        bool down = true;
+        bool left = true;
+        bool right = true;
+    } m_possibleMoves;
 };
