@@ -85,7 +85,12 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
             Snakes enemies;
-            enemies.assign(board.snakes.begin() + 1, board.snakes.end());
+
+            if (board.snakes.size() > 0) {
+                enemies.assign(board.snakes.begin() + 1, board.snakes.end());
+            } else {
+                enemies.push_back(player);
+            }
 
             Minimax::GameState state = { board, player, enemies };
 
