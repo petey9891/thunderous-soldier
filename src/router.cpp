@@ -13,7 +13,7 @@ using namespace nlohmann;
 using namespace Battlesnake;
 
 // Used to enable debug printouts.
-const bool debug = true;
+const bool debug = false;
 const bool print_move = true;
 
 
@@ -91,6 +91,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             } else {
                 enemies.push_back(player);
             }
+
+            printf("Number of enemies: %d\n", (int) enemies.size());
 
             Minimax::GameState state = { board, player, enemies };
 

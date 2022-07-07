@@ -9,6 +9,7 @@ namespace Battlesnake {
         empty,
         head,
         body,
+        tail,
         food,
         hazard,
         filled
