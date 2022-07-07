@@ -5,6 +5,7 @@
 #include "battlesnake.hpp"
 #include "router.hpp"
 #include "minimax.hpp"
+#include "basic.hpp"
 
 using namespace std;
 using namespace nlohmann;
@@ -97,7 +98,9 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             std::cout << "*************** END ******************" << std::endl;
             paranoid.printWorldMap(grid);
 
-            Direction move = Direction::right;
+            Basic::BasicSnake snake;
+
+            Direction move = snake.basic(board, player);
 
             if (print_move) {
                 std::cout << "*************** TURN " << data["turn"] << " ******************" << std::endl;
