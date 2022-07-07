@@ -33,7 +33,6 @@ namespace Battlesnake {
             };
 
             if (maximizingPlayer) {
-                std::cout << "Maximizing" << std::endl;
                 for (Point move : moves) {
                     Grid newGrid = grid;
                     GameState newState = state;
@@ -48,7 +47,6 @@ namespace Battlesnake {
 
                     if (newAlpha.value > alpha) {
                         alpha = newAlpha.value;
-                        std::cout << move << std::endl;
                         alphaMove = move;
                     }
 
@@ -58,7 +56,6 @@ namespace Battlesnake {
                 }
                 return { alpha, alphaMove };
             } else {
-                std::cout << "Minimixing" << std::endl;
                 for (Point move : moves) {
                     Grid newGrid = grid;
                     GameState newState = state;
@@ -154,7 +151,7 @@ namespace Battlesnake {
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
             }
-            
+
             return score;
         }
 
