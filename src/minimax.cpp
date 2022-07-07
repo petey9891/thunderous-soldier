@@ -48,15 +48,12 @@ namespace Battlesnake {
 
                     if (newAlpha.value > alpha.value) {
                         alpha = { newAlpha.value, move };
-                        // alpha = newAlpha.value;
-                        // alphaMove = move;
                     }
 
                     if (beta.value <= alpha.value) {
                         break;
                     }
                 }
-                // return { alpha, alphaMove };
                 return alpha;
             } else {
                 for (Point move : moves) {
@@ -73,24 +70,24 @@ namespace Battlesnake {
 
                     if (newBeta.value < beta.value) {
                         beta = { newBeta.value, move };
-                        // beta = newBeta.value;
-                        // betaMove = move;
                     }
 
                     if (beta.value <= alpha.value) {
                         break;
                     }
                 }
-                // return { beta, betaMove };
                 return beta;
             }
         }
 
         Direction Minimax::direction(const Point& head, const Point& bestMove) const {
+            std::cout << "head: " << head << std::endl;
+            std::cout << "move: " << bestMove << std::endl;
+
             if (head.x == bestMove.x + 1 && head.y == bestMove.y) {
-                return Direction::right;
-            } else if (head.x == bestMove.x - 1 && head.y == bestMove.y) {
                 return Direction::left;
+            } else if (head.x == bestMove.x - 1 && head.y == bestMove.y) {
+                return Direction::right;
             } else if (head.x == bestMove.x && head.y == bestMove.y + 1) {
                 return Direction::down;
             } else if (head.x == bestMove.x && head.y == bestMove.y - 1) {
