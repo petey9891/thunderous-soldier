@@ -81,9 +81,6 @@ namespace Battlesnake {
         }
 
         Direction Minimax::direction(const Point& head, const Point& bestMove) const {
-            std::cout << "head: " << head << std::endl;
-            std::cout << "move: " << bestMove << std::endl;
-
             if (head.x == bestMove.x + 1 && head.y == bestMove.y) {
                 return Direction::left;
             } else if (head.x == bestMove.x - 1 && head.y == bestMove.y) {
