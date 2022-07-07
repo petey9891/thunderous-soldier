@@ -13,7 +13,7 @@ using namespace nlohmann;
 using namespace Battlesnake;
 
 // Used to enable debug printouts.
-const bool debug = false;
+const bool debug = true;
 const bool print_move = true;
 
 
