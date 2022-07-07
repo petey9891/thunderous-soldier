@@ -12,6 +12,11 @@ namespace Battlesnake {
             Snakes enemies;
         };
 
+        struct SuggestedMove {
+            float value;
+            Point move;
+        };
+
         using Grid = std::vector<std::vector<BoardElement>>;
         
         class Minimax {
@@ -21,14 +26,16 @@ namespace Battlesnake {
             ~Minimax() = default;
 
         public:
-            float minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer);
+            SuggestedMove minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, float alpha, float beta, Point alphaMove, Point betaMove, Points prevEnemyMoves);
 
             Grid buildWorldMap(const Board& board);
             void printWorldMap(const Grid& grid) const;
 
+            Direction direction(const Point& head, const Point& bestMove) const;
+
         private:
             int floodFill(const Point& position, Grid& grid, int open, bool failsafe = false) const;
-            float heuristic(Grid grid, const GameState& state, Points moves);
+            float heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves);
             
             Points neighbors(Point node, Grid grid) const;
             bool isSafeSquare(const BoardElement element, bool failsafe = false) const;

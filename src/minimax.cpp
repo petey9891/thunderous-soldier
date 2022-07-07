@@ -14,34 +14,88 @@ namespace Battlesnake {
             
         }
 
-        float Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer) {
-            Points moves = this->neighbors(state.player.head, grid);
+        SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, float alpha, float beta, Point alphaMove, Point betaMove, Points prevEnemyMoves) {            
+            Points moves;
+            Points playerMoves = this->neighbors(state.player.head, grid);
+            Points enemyMoves;
 
-            std::cout << "Moves size: " << moves.size() << std::endl;
+            if (maximizingPlayer) {
+                moves = playerMoves;
+                enemyMoves = this->neighbors(state.enemies[0].head, grid);
+            } else {
+                enemyMoves = prevEnemyMoves;
+                moves = prevEnemyMoves;
+            }
+
             if (depth == 0) {
-                std::cout << "Heuristic:" << std::endl;
-                float heuristic = this->heuristic(grid, state, moves);
-                return heuristic;
+                float heuristic = this->heuristic(grid, state, playerMoves, enemyMoves);
+                return { heuristic, { -1, -1 } };
             };
 
-            float value;
             if (maximizingPlayer) {
-                value = std::numeric_limits<float>::min();
                 std::cout << "Maximizing" << std::endl;
                 for (Point move : moves) {
-                    std::cout << move << std::endl;
-                    value = std::max(value, this->minimax(grid, state, depth - 1, false));
+                    Grid newGrid = grid;
+                    GameState newState = state;
+
+                    newGrid[state.player.head.x][state.player.head.y] = BoardElement::body;
+                    newGrid[move.x][move.y] = BoardElement::head;
+
+                    newState.player.head = move;
+                    newState.player.body.insert(newState.player.body.begin(), move);
+
+                    SuggestedMove newAlpha = this->minimax(newGrid, newState, depth - 1, false, alpha, beta, alphaMove, betaMove, enemyMoves);
+
+                    if (newAlpha.value > alpha) {
+                        alpha = newAlpha.value;
+                        std::cout << move << std::endl;
+                        alphaMove = move;
+                    }
+
+                    if (beta <= alpha) {
+                        break;
+                    }
                 }
-                return value;
+                return { alpha, alphaMove };
             } else {
-                value = std::numeric_limits<float>::max();
                 std::cout << "Minimixing" << std::endl;
                 for (Point move : moves) {
-                    std::cout << move << std::endl;
-                    value = std::min(value, this->minimax(grid, state, depth - 1, true));
+                    Grid newGrid = grid;
+                    GameState newState = state;
+
+                    newGrid[state.enemies[0].head.x][state.enemies[0].head.y] = BoardElement::body;
+                    newGrid[move.x][move.y] = BoardElement::head;
+
+                    newState.enemies[0].head = move;
+                    newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
+
+                    SuggestedMove newBeta = this->minimax(newGrid, newState, depth - 1, true, alpha, beta, alphaMove, betaMove, {});
+
+                    if (newBeta.value < beta) {
+                        beta = newBeta.value;
+                        betaMove = move;
+                    }
+
+                    if (beta <= alpha) {
+                        break;
+                    }
                 }
-                return value;
+                return { beta, betaMove };
             }
+        }
+
+        Direction Minimax::direction(const Point& head, const Point& bestMove) const {
+            if (head.x == bestMove.x + 1 && head.y == bestMove.y) {
+                return Direction::right;
+            } else if (head.x == bestMove.x - 1 && head.y == bestMove.y) {
+                return Direction::left;
+            } else if (head.x == bestMove.x && head.y == bestMove.y + 1) {
+                return Direction::down;
+            } else if (head.x == bestMove.x && head.y == bestMove.y - 1) {
+                return Direction::up;
+            }
+
+            return Direction::down;
         }
 
         int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {
@@ -57,27 +111,36 @@ namespace Battlesnake {
             return open;
         }
 
-        float Minimax::heuristic(Grid grid, const GameState& state, Points playerMoves) {
+        float Minimax::heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves) {
             float score = 0.0f;
             
             // Calculate my score
-
             if (playerMoves.empty()) {
                 return std::numeric_limits<float>::min();
             }
 
             Grid newGrid = grid;
             const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
-            printf("availableSquares: %d\n", availableSquares);
-            
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
-            printf("percentAvailable: %f\n", percentAvailable);
 
             if (availableSquares <= state.player.length) {
                 return -9999999.0f * (1.0f / percentAvailable);
             }
 
+            // Calculate enemy score
+            if (enemyMoves.empty()) {
+                score += std::numeric_limits<float>::max();
+            }
 
+            Grid enemyGrid = grid;
+            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0, true);
+            const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
+
+            if (enemyAvailableSquares <= state.enemies[0].length) {
+                score += 9999999;
+            }
+
+            // Avoid edge of board
             if (state.player.head.x == 0 ||
                 state.player.head.x == this->m_width - 1 ||
                 state.player.head.y == 0 ||
@@ -86,25 +149,12 @@ namespace Battlesnake {
                 score -= 25000;
             }
 
-            Grid enemyGrid = grid;
-            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0, true);
-            printf("enemyAvailableSquares: %d\n", enemyAvailableSquares);
-            
-            const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
-            printf("enemyPercentAvailable: %f\n", enemyPercentAvailable);
-
-            if (enemyAvailableSquares <= state.enemies[0].length) {
-                score += 9999999;
-            }
-
             if (score < 0.0f) {
                 score = score * (1.0f / percentAvailable);
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
             }
-
-            printf("score: %f\n", score);
-
+            
             return score;
         }
 
@@ -167,6 +217,7 @@ namespace Battlesnake {
                 }
                 printf("\n");
             }
+            printf("\n");
         }
 
         Grid Minimax::buildWorldMap(const Board& board) {

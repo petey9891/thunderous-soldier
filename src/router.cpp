@@ -1,5 +1,6 @@
 #include <string.h>
 #include <iostream>
+#include <limits>
 
 #include "json.hpp"
 #include "battlesnake.hpp"
@@ -90,17 +91,26 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             Minimax::Minimax paranoid(board.width, board.height);
             Minimax::Grid grid = paranoid.buildWorldMap(board);
-            std::cout << "*************** START ******************" << std::endl;
+            // std::cout << "*************** START ******************" << std::endl;
             
-            paranoid.printWorldMap(grid);
-            paranoid.minimax(grid, state, 4, true);
+            // paranoid.printWorldMap(grid);
+            // std::cout << "*************** VALUE ******************" << std::endl;
+            Minimax::SuggestedMove moveTest = paranoid.minimax(
+                grid, 
+                state, 
+                2, 
+                true,
+                std::numeric_limits<float>::lowest(),
+                std::numeric_limits<float>::max(),
+                {},
+                {},
+                {}
+            );
 
-            std::cout << "*************** END ******************" << std::endl;
-            paranoid.printWorldMap(grid);
+            // std::cout << "*************** END ******************" << std::endl;
+            // paranoid.printWorldMap(grid);
 
-            Basic::BasicSnake snake;
-
-            Direction move = snake.basic(board, player);
+            Direction move = paranoid.direction(player.head, moveTest.move);
 
             if (print_move) {
                 std::cout << "*************** TURN " << data["turn"] << " ******************" << std::endl;
