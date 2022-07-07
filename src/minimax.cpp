@@ -14,7 +14,8 @@ namespace Battlesnake {
             
         }
 
-        SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, float alpha, float beta, Point alphaMove, Point betaMove, Points prevEnemyMoves) {            
+        // SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, float alpha, float beta, Point alphaMove, Point betaMove, Points prevEnemyMoves) {            
+        SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, SuggestedMove alpha, SuggestedMove beta, Points prevEnemyMoves) {            
             Points moves;
             Points playerMoves = this->neighbors(state.player.head, grid);
             Points enemyMoves;
@@ -43,18 +44,20 @@ namespace Battlesnake {
                     newState.player.head = move;
                     newState.player.body.insert(newState.player.body.begin(), move);
 
-                    SuggestedMove newAlpha = this->minimax(newGrid, newState, depth - 1, false, alpha, beta, alphaMove, betaMove, enemyMoves);
+                    SuggestedMove newAlpha = this->minimax(newGrid, newState, depth - 1, false, alpha, beta, enemyMoves);
 
-                    if (newAlpha.value > alpha) {
-                        alpha = newAlpha.value;
-                        alphaMove = move;
+                    if (newAlpha.value > alpha.value) {
+                        alpha = { newAlpha.value, move };
+                        // alpha = newAlpha.value;
+                        // alphaMove = move;
                     }
 
-                    if (beta <= alpha) {
+                    if (beta.value <= alpha.value) {
                         break;
                     }
                 }
-                return { alpha, alphaMove };
+                // return { alpha, alphaMove };
+                return alpha;
             } else {
                 for (Point move : moves) {
                     Grid newGrid = grid;
@@ -66,18 +69,20 @@ namespace Battlesnake {
                     newState.enemies[0].head = move;
                     newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
 
-                    SuggestedMove newBeta = this->minimax(newGrid, newState, depth - 1, true, alpha, beta, alphaMove, betaMove, {});
+                    SuggestedMove newBeta = this->minimax(newGrid, newState, depth - 1, true, alpha, beta, {});
 
-                    if (newBeta.value < beta) {
-                        beta = newBeta.value;
-                        betaMove = move;
+                    if (newBeta.value < beta.value) {
+                        beta = { newBeta.value, move };
+                        // beta = newBeta.value;
+                        // betaMove = move;
                     }
 
-                    if (beta <= alpha) {
+                    if (beta.value <= alpha.value) {
                         break;
                     }
                 }
-                return { beta, betaMove };
+                // return { beta, betaMove };
+                return beta;
             }
         }
 
@@ -113,7 +118,7 @@ namespace Battlesnake {
             
             // Calculate my score
             if (playerMoves.empty()) {
-                return std::numeric_limits<float>::min();
+                return std::numeric_limits<float>::lowest();
             }
 
             Grid newGrid = grid;

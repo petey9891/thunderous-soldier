@@ -100,10 +100,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 state, 
                 6, 
                 true,
-                std::numeric_limits<float>::lowest(),
-                std::numeric_limits<float>::max(),
-                {},
-                {},
+                { std::numeric_limits<float>::lowest(), {} },
+                { std::numeric_limits<float>::max(), {} },
                 {}
             );
 

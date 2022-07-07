@@ -26,7 +26,8 @@ namespace Battlesnake {
             ~Minimax() = default;
 
         public:
-            SuggestedMove minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, float alpha, float beta, Point alphaMove, Point betaMove, Points prevEnemyMoves);
+            // SuggestedMove minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, float alpha, float beta, Point alphaMove, Point betaMove, Points prevEnemyMoves);
+            SuggestedMove minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, SuggestedMove alpha, SuggestedMove beta, Points prevEnemyMoves);
 
             Grid buildWorldMap(const Board& board);
             void printWorldMap(const Grid& grid) const;
