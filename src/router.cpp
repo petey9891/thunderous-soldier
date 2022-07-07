@@ -13,7 +13,7 @@ using namespace nlohmann;
 using namespace Battlesnake;
 
 // Used to enable debug printouts.
-const bool debug = true;
+const bool debug = false;
 const bool print_move = true;
 
 
@@ -86,7 +86,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Snake player = data["you"].get<Snake>();
             Snakes enemies;
 
-            if (board.snakes.size() > 0) {
+            if (board.snakes.size() > 1) {
                 enemies.assign(board.snakes.begin() + 1, board.snakes.end());
             } else {
                 enemies.push_back(player);
