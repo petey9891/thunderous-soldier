@@ -36,16 +36,32 @@ namespace Battlesnake {
                 for (Point move : moves) {
                     Grid newGrid = grid;
                     GameState newState = state;
+                    // std::cout << "Going to move to: " << move <<std::endl;
 
-                    newGrid[state.player.head.x][state.player.head.y] = BoardElement::body;
+                    const int length = newState.player.body.size() - 1;
+                    const bool growing = length < 2;
+                    // printf("Current snake length: %d, isGrowing: %d\n", length + 1, growing);
+                    if (growing) {
+                        newGrid[newState.player.body[length].x][newState.player.body[length].y] = BoardElement::tail;
+                    } else {
+                        newGrid[newState.player.body[length - 1].x][newState.player.body[length - 1].y] = BoardElement::tail;
+                        newGrid[newState.player.body[length].x][newState.player.body[length].y] = BoardElement::empty;
+                        newState.player.body.pop_back();
+                    }
+
+                    // printf("****** UPDATE TAIL ******\n");
+                    // this->printWorldMap(newGrid);
+
+                    // Update snake's head
+                    if (length > 0) {
+                        newGrid[newState.player.head.x][newState.player.head.y] = BoardElement::body;
+                    }
                     newGrid[move.x][move.y] = BoardElement::head;
-                    newGrid[state.player.body[state.player.body.size() - 1].x][state.player.body[state.player.body.size() - 1].y] = BoardElement::empty;
-                    newGrid[state.player.body[state.player.body.size() - 2].x][state.player.body[state.player.body.size() - 2].y] = BoardElement::tail;
-
                     newState.player.head = move;
                     newState.player.body.insert(newState.player.body.begin(), move);
-                    newState.player.body.pop_back();
 
+                    // printf("****** UPDATE HEAD ******\n");
+                    // this->printWorldMap(newGrid);
                     // std::cout << "Moving to: " << move << std::endl;
                     // this->printWorldMap(newGrid);
                     SuggestedMove newAlpha = this->minimax(newGrid, newState, depth - 1, false, alpha, beta, enemyMoves);
@@ -69,14 +85,37 @@ namespace Battlesnake {
                     Grid newGrid = grid;
                     GameState newState = state;
 
-                    newGrid[state.enemies[0].head.x][state.enemies[0].head.y] = BoardElement::body;
-                    newGrid[move.x][move.y] = BoardElement::head;
-                    newGrid[state.enemies[0].body[state.enemies[0].body.size() - 1].x][state.enemies[0].body[state.enemies[0].body.size() - 1].y] = BoardElement::empty;
-                    newGrid[state.enemies[0].body[state.enemies[0].body.size() - 2].x][state.enemies[0].body[state.enemies[0].body.size() - 2].y] = BoardElement::tail;
 
+                    const int length = newState.enemies[0].body.size() - 1;
+                    const bool growing = length < 2;
+                    // printf("Current snake length: %d, isGrowing: %d\n", length + 1, growing);
+                    if (growing) {
+                        newGrid[newState.enemies[0].body[length].x][newState.enemies[0].body[length].y] = BoardElement::tail;
+                    } else {
+                        newGrid[newState.enemies[0].body[length - 1].x][newState.enemies[0].body[length - 1].y] = BoardElement::tail;
+                        newGrid[newState.enemies[0].body[length].x][newState.enemies[0].body[length].y] = BoardElement::empty;
+                        newState.enemies[0].body.pop_back();
+                    }
+
+                    // printf("****** UPDATE TAIL ******\n");
+                    // this->printWorldMap(newGrid);
+
+                    // Update snake's head
+                    if (length > 0) {
+                        newGrid[newState.enemies[0].head.x][newState.enemies[0].head.y] = BoardElement::body;
+                    }
+                    newGrid[move.x][move.y] = BoardElement::head;
                     newState.enemies[0].head = move;
                     newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
-                    newState.enemies[0].body.pop_back();
+
+                    // newGrid[state.enemies[0].head.x][state.enemies[0].head.y] = BoardElement::body;
+                    // newGrid[move.x][move.y] = BoardElement::head;
+                    // // newGrid[state.enemies[0].body[state.enemies[0].body.size() - 1].x][state.enemies[0].body[state.enemies[0].body.size() - 1].y] = BoardElement::empty;
+                    // // newGrid[state.enemies[0].body[state.enemies[0].body.size() - 2].x][state.enemies[0].body[state.enemies[0].body.size() - 2].y] = BoardElement::tail;
+
+                    // newState.enemies[0].head = move;
+                    // newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
+                    // // newState.enemies[0].body.pop_back();
 
                     // std::cout << "Moving to: " << move << std::endl;
                     // this->printWorldMap(newGrid);
