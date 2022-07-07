@@ -36,7 +36,7 @@ namespace Battlesnake {
 
         private:
             int floodFill(const Point& position, Grid& grid, int open, bool failsafe = false) const;
-            float heuristic(Grid grid, const GameState& state, int enemyIndex, Points playerMoves, Points enemyMoves);
+            float heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves);
             
             Points neighbors(Point node, Grid grid) const;
             bool isSafeSquare(const BoardElement element, bool failsafe = false) const;
