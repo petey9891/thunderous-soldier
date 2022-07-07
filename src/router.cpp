@@ -57,10 +57,10 @@ namespace Battlesnake {
 
 void Net::Router::handleRoutes(httplib::Server& server) {
     server.Get("/", [](const auto &, auto &res) {
-        string head = "default";
-        string tail = "default";
+        string head = "sand-worm";
+        string tail = "round-bum";
         string author = "petey9891";
-        string color = "#888888";
+        string color = "#DF6230";
         res.set_content("{\"apiversion\":\"1\", \"head\":\"" + head + "\", \"tail\":\"" + tail + "\", \"color\":\"" + color + "\", " + "\"author\":\"" + author + "\"}", "application/json");
     });
 
