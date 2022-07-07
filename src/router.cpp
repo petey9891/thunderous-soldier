@@ -98,7 +98,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
-                2, 
+                4, 
                 true,
                 std::numeric_limits<float>::lowest(),
                 std::numeric_limits<float>::max(),
