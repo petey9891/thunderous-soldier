@@ -1,30 +1,42 @@
 #pragma once
 
+#include <vector>
 #include "battlesnake.hpp"
-class Minimax {
-private:
-    struct PossibleMoves {
-        bool up = true;
-        bool down = true;
-        bool left = true;
-        bool right = true;
-    } m_possibleMoves;
 
+namespace Battlesnake {
+    namespace Minimax {
 
-public:
-    Minimax() = default;
+        struct GameState {
+            Board board;
+            Snake player;
+            Snakes enemies;
+        };
 
-public:
-    Direction minimax(const Board& board, const Snake& player); 
+        using Grid = std::vector<std::vector<BoardElement>>;
+        
+        class Minimax {
+        public:
+            Minimax() = default;
+            Minimax(int width, int height);
+            ~Minimax() = default;
 
-private:
-    Direction move() const;
+        public:
+            float minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer);
 
-    Point getHead(Snake snake);
-    Point getNeck(Snake snake);
+            Grid buildWorldMap(const Board& board);
+            void printWorldMap(const Grid& grid) const;
 
-    void checkNeck(const Snake& player);
-    void checkBoundaries(const Board& board, const Snake& player);
+        private:
+            int floodFill(const Point& position, Grid& grid, int open, bool failsafe = false) const;
+            float heuristic(Grid grid, const GameState& state, Points moves);
+            
+            Points neighbors(Point node, Grid grid) const;
+            bool isSafeSquare(const BoardElement element, bool failsafe = false) const;
 
-    void logPossibleMoves(const std::string location) const;
+        private:
+            int m_width;
+            int m_height;
+            Grid m_grid;
+        };
+    };
 };

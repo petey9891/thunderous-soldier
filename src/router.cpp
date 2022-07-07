@@ -8,44 +8,48 @@
 
 using namespace std;
 using namespace nlohmann;
+using namespace Battlesnake;
 
 // Used to enable debug printouts.
 const bool debug = false;
 const bool print_move = true;
 
-void from_json(const json& j, Point& p) {
-    p.x = j["x"].get<Index>();
-    p.y = j["y"].get<Index>();
-}
 
-void from_json(const json& j, Snake& s) {
-    s.body = j["body"].get<Points>();
-    s.head = j["head"].get<Point>();
-    s.health = j["health"].get<int>();
-    s.id = j["id"].get<std::string>();
-    s.length = j["length"].get<int>();
-    s.name = j["name"].get<std::string>();
-}
+namespace Battlesnake {
+    void from_json(const json& j, Point& p) {
+        p.x = j["x"].get<Index>();
+        p.y = j["y"].get<Index>();
+    }
 
-void from_json(const json& j, Board& b) {
-    b.height = j["height"].get<int>();
-    b.width = j["width"].get<int>();
-    b.food = j["food"].get<Points>();
-    b.hazards = j["hazards"].get<Points>();
-    b.snakes = j["snakes"].get<Snakes>();
-}
+    void from_json(const json& j, Snake& s) {
+        s.body = j["body"].get<Points>();
+        s.head = j["head"].get<Point>();
+        s.health = j["health"].get<int>();
+        s.id = j["id"].get<std::string>();
+        s.length = j["length"].get<int>();
+        s.name = j["name"].get<std::string>();
+    }
+
+    void from_json(const json& j, Board& b) {
+        b.height = j["height"].get<int>();
+        b.width = j["width"].get<int>();
+        b.food = j["food"].get<Points>();
+        b.hazards = j["hazards"].get<Points>();
+        b.snakes = j["snakes"].get<Snakes>();
+    }
 
 
-string direction_to_string(const Direction d) {
-    switch(d) {
-    case Direction::up:
-        return "{ \"move\": \"up\" }";
-    case Direction::left:
-        return "{ \"move\": \"left\" }";
-    case Direction::down:
-        return "{ \"move\": \"down\" }";
-    case Direction::right:
-        return "{ \"move\": \"right\" }";
+    string direction_to_string(const Direction d) {
+        switch(d) {
+        case Direction::up:
+            return "{ \"move\": \"up\" }";
+        case Direction::left:
+            return "{ \"move\": \"left\" }";
+        case Direction::down:
+            return "{ \"move\": \"down\" }";
+        case Direction::right:
+            return "{ \"move\": \"right\" }";
+        }
     }
 }
 
@@ -78,9 +82,22 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             // Snake snake = data["you"].get<Snake>();
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
+            Snakes enemies;
+            enemies.assign(board.snakes.begin() + 1, board.snakes.end());
 
-            Minimax paranoid;
-            Direction move = paranoid.minimax(board, player);
+            Minimax::GameState state = { board, player, enemies };
+
+            Minimax::Minimax paranoid(board.width, board.height);
+            Minimax::Grid grid = paranoid.buildWorldMap(board);
+            std::cout << "*************** START ******************" << std::endl;
+            
+            paranoid.printWorldMap(grid);
+            paranoid.minimax(grid, state, 4, true);
+
+            std::cout << "*************** END ******************" << std::endl;
+            paranoid.printWorldMap(grid);
+
+            Direction move = Direction::right;
 
             if (print_move) {
                 std::cout << "*************** TURN " << data["turn"] << " ******************" << std::endl;
