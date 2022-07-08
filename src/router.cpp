@@ -78,7 +78,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             if (debug) {
             std::cout << "*************** MOVE ******************" << std::endl;
-            std::cout << data.dump(4) << std::endl;
+            // std::cout << data.dump(4) << std::endl;
+            std::cout << data.dump(0) << std::endl;
             }
 
             // Snake snake = data["you"].get<Snake>();
@@ -97,7 +98,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Minimax::Minimax paranoid(board.width, board.height);
             Minimax::Grid grid = paranoid.buildWorldMap(board);
             
-            paranoid.printWorldMap(grid);
+            // paranoid.printWorldMap(grid);
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
