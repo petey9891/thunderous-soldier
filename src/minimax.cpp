@@ -193,7 +193,7 @@ namespace Battlesnake {
             const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
-                score += 9999999;
+                score += 9999999.0f;
             }
 
             // Fooooooood
@@ -206,10 +206,14 @@ namespace Battlesnake {
                 }
             }
 
+            // printf("foodWeight: %d\n", foodWeight);
             if (foodWeight > 0) {
                 // for (Point food : state.board.food) {
                 for (int i = 0; i < state.board.food.size(); i++) {
-                    float distance = this->distanceTo(state.player.head, state.board.food[i]);
+                    int distance = this->distanceTo(state.player.head, state.board.food[i]);
+                    // std::cout << "Player head: " << state.player.head;
+                    // std::cout << "Food: " << state.board.food[i];
+                    // printf("distance to food: %d\n", distance);
                     score = score - (distance * foodWeight) - i;
                 }
             }
@@ -228,7 +232,7 @@ namespace Battlesnake {
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
             }
-
+            // printf("score: %f\n", score);
             return score;
         }
 
@@ -260,7 +264,7 @@ namespace Battlesnake {
             if (failsafe) {
                 return true;
             }
-            return element == BoardElement::empty;
+            return element == BoardElement::empty || element == BoardElement::food;
         }
 
         void Minimax::printWorldMap(const Grid& grid) const {

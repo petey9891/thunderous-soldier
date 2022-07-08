@@ -98,10 +98,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             Minimax::Minimax paranoid(board.width, board.height);
             Minimax::Grid grid = paranoid.buildWorldMap(board);
-            // std::cout << "*************** START ******************" << std::endl;
             
             // paranoid.printWorldMap(grid);
-            // std::cout << "*************** VALUE ******************" << std::endl;
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
@@ -111,9 +109,6 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 { std::numeric_limits<float>::max(), {} },
                 {}
             );
-
-            // std::cout << "*************** END ******************" << std::endl;
-            // paranoid.printWorldMap(grid);
 
             Direction move = paranoid.direction(player.head, moveTest.move);
 
