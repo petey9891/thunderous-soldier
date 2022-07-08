@@ -45,6 +45,7 @@ namespace Battlesnake {
             int m_width;
             int m_height;
             Grid m_grid;
+            int MAX_RECURSION_DEPTH = 6;
         };
     };
 };
