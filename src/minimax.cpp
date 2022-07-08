@@ -65,7 +65,7 @@ namespace Battlesnake {
                     } else {
                         newState.player.health -= 1;
                     }
-                    
+
                     const int length = newState.player.body.size() - 1;
                     const bool growing = length < 2;
                     if (growing) {
@@ -91,6 +91,7 @@ namespace Battlesnake {
                     SuggestedMove newAlpha = this->minimax(newGrid, newState, depth + 1, false, alpha, beta, enemyMoves);
 
                     if (newAlpha.value > alpha.value) {
+                        // std::cout << "Setting alpha move to: " << move;
                         alpha = { newAlpha.value, move };
                     }
 
@@ -129,6 +130,7 @@ namespace Battlesnake {
                     SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta, {});
 
                     if (newBeta.value < beta.value) {
+                        // std::cout << "Setting beta move to: " << move;
                         beta = { newBeta.value, move };
                     }
 
@@ -150,8 +152,8 @@ namespace Battlesnake {
             } else if (head.x == bestMove.x && head.y == bestMove.y - 1) {
                 return Direction::up;
             }
-
-            return Direction::down;
+            
+            return Direction::INVALID;
         }
 
         int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {

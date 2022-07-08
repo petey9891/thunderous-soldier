@@ -13,7 +13,7 @@ using namespace nlohmann;
 using namespace Battlesnake;
 
 // Used to enable debug printouts.
-const bool debug = true;
+const bool debug = false;
 const bool print_move = true;
 
 
@@ -51,6 +51,8 @@ namespace Battlesnake {
             return "{ \"move\": \"down\" }";
         case Direction::right:
             return "{ \"move\": \"right\" }";
+        case Direction::INVALID:
+            return "{ \"move\": \"INVALID\" }";
         }
     }
 }
@@ -78,17 +80,15 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             if (debug) {
             std::cout << "*************** MOVE ******************" << std::endl;
-            // std::cout << data.dump(4) << std::endl;
-            std::cout << data.dump(0) << std::endl;
+            std::cout << data << std::endl;
             }
 
-            // Snake snake = data["you"].get<Snake>();
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
             Snakes enemies;
 
             if (board.snakes.size() > 1) {
-                enemies.assign(board.snakes.begin() + 1, board.snakes.end());
+                std::copy_if(board.snakes.begin(), board.snakes.end(), std::back_inserter(enemies), [player](Snake snake) { return snake.id != player.id; });
             } else {
                 enemies.push_back(player);
             }

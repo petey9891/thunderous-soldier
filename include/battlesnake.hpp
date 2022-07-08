@@ -19,7 +19,8 @@ namespace Battlesnake {
         up,
         left,
         right,
-        down
+        down,
+        INVALID
     };
 
     inline std::ostream & operator<<(std::ostream &os, const Direction& d) {
@@ -35,6 +36,9 @@ namespace Battlesnake {
             break;
         case Direction::right:
             os << "right";
+            break;
+        case Direction::INVALID:
+            os << "INVALID";
             break;
         }
         return os;
