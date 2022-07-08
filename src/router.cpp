@@ -97,11 +97,11 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             Minimax::Minimax paranoid(board.width, board.height);
 
-            // if (enemies.size() >= 4) {
-            //     paranoid.MAX_RECURSION_DEPTH = 1;
-            // } else if (enemies.size() >= 2) {
-            //     paranoid.MAX_RECURSION_DEPTH = 4;
-            // }
+            if (enemies.size() >= 4) {
+                paranoid.MAX_RECURSION_DEPTH = 1;
+            } else if (enemies.size() >= 2) {
+                paranoid.MAX_RECURSION_DEPTH = 4;
+            }
 
             Minimax::Grid grid = paranoid.buildWorldMap(board);
             
