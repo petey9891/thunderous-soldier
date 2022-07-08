@@ -96,6 +96,15 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Minimax::GameState state = { board, player, enemies };
 
             Minimax::Minimax paranoid(board.width, board.height);
+
+            if (enemies.size() >= 4) {
+                paranoid.MAX_RECURSION_DEPTH = 1;
+            } else if (enemies.size() >= 2) {
+                paranoid.MAX_RECURSION_DEPTH = 4;
+            }
+
+            printf("Number of enemies: %d\n, MAX_RECURSION_DEPTH: %d\n", (int) enemies.size(), paranoid.MAX_RECURSION_DEPTH);
+
             Minimax::Grid grid = paranoid.buildWorldMap(board);
             
             // paranoid.printWorldMap(grid);

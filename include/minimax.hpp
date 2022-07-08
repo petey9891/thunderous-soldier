@@ -43,11 +43,13 @@ namespace Battlesnake {
 
             int distanceTo(const Point& src, const Point& dst) const;
 
+        public:
+            int MAX_RECURSION_DEPTH = 7;
+
         private:
             int m_width;
             int m_height;
             Grid m_grid;
-            int MAX_RECURSION_DEPTH = 8;
         };
     };
 };
