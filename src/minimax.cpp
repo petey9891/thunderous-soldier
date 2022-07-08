@@ -90,7 +90,6 @@ namespace Battlesnake {
                 }
                 return alpha;
             } else {
-                printf("Depth: %d\n", depth);
                 for (Point move : moves) {
                     // std::cout << "Current move: " << this->direction(state.enemies[0].head, move) << std::endl;
                     Grid newGrid = grid;
@@ -233,7 +232,7 @@ namespace Battlesnake {
             if (failsafe) {
                 return true;
             }
-            return element == BoardElement::empty || element == BoardElement::tail;
+            return element == BoardElement::empty;
         }
 
         void Minimax::printWorldMap(const Grid& grid) const {
