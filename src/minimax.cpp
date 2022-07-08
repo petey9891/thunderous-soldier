@@ -58,20 +58,24 @@ namespace Battlesnake {
                     Grid newGrid = grid;
                     GameState newState = state;
 
+                    bool eating = false;
                     if (newGrid[move.x][move.y] == BoardElement::food) {
+                        eating = true;
                         newState.player.health = 100;
                     } else {
                         newState.player.health -= 1;
                     }
-
+                    
                     const int length = newState.player.body.size() - 1;
                     const bool growing = length < 2;
                     if (growing) {
                         newGrid[newState.player.body[length].x][newState.player.body[length].y] = BoardElement::tail;
                     } else {
-                        newGrid[newState.player.body[length - 1].x][newState.player.body[length - 1].y] = BoardElement::tail;
-                        newGrid[newState.player.body[length].x][newState.player.body[length].y] = BoardElement::empty;
-                        newState.player.body.pop_back();
+                        if (!eating) {
+                            newGrid[newState.player.body[length - 1].x][newState.player.body[length - 1].y] = BoardElement::tail;
+                            newGrid[newState.player.body[length].x][newState.player.body[length].y] = BoardElement::empty;
+                            newState.player.body.pop_back();
+                        }
                     }
 
                     // Update snake's head
