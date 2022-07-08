@@ -14,7 +14,7 @@ using namespace Battlesnake;
 
 // Used to enable debug printouts.
 const bool debug = false;
-const bool print_move = true;
+const bool print_move = false;
 
 
 namespace Battlesnake {
