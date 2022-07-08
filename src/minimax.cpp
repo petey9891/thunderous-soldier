@@ -185,7 +185,7 @@ namespace Battlesnake {
             if (state.player.head.x == state.enemies[0].head.x && 
                     state.player.head.y == state.enemies[0].head.y) {
                 // If my health is greater
-                if (state.player.health > state.enemies[0].health) {
+                if (state.player.length > state.enemies[0].length) {
                     return std::numeric_limits<float>::max();
                 } else {
                     return std::numeric_limits<float>::lowest();
