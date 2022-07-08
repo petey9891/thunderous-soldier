@@ -175,6 +175,18 @@ namespace Battlesnake {
                 return std::numeric_limits<float>::lowest();
             }
 
+            // Head to head collisions
+            if (state.player.head.x == state.enemies[0].head.x && 
+                    state.player.head.y == state.enemies[0].head.y) {
+                // If my health is greater
+                if (state.player.health > state.enemies[0].health) {
+                    return std::numeric_limits<float>::max();
+                } else {
+                    return std::numeric_limits<float>::lowest();
+                }
+            }
+
+
             Grid newGrid = grid;
             const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
@@ -206,14 +218,9 @@ namespace Battlesnake {
                 }
             }
 
-            // printf("foodWeight: %d\n", foodWeight);
             if (foodWeight > 0) {
-                // for (Point food : state.board.food) {
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
-                    // std::cout << "Player head: " << state.player.head;
-                    // std::cout << "Food: " << state.board.food[i];
-                    // printf("distance to food: %d\n", distance);
                     score = score - (distance * foodWeight) - i;
                 }
             }
@@ -232,7 +239,6 @@ namespace Battlesnake {
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
             }
-            // printf("score: %f\n", score);
             return score;
         }
 
