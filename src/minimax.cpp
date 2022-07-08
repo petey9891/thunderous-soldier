@@ -58,6 +58,12 @@ namespace Battlesnake {
                     Grid newGrid = grid;
                     GameState newState = state;
 
+                    if (newGrid[move.x][move.y] == BoardElement::food) {
+                        newState.player.health = 100;
+                    } else {
+                        newState.player.health -= 1;
+                    }
+
                     const int length = newState.player.body.size() - 1;
                     const bool growing = length < 2;
                     if (growing) {
@@ -165,6 +171,10 @@ namespace Battlesnake {
                 return std::numeric_limits<float>::lowest();
             }
 
+            if (state.player.health <= 0) {
+                return std::numeric_limits<float>::lowest();
+            }
+
             Grid newGrid = grid;
             const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
@@ -184,6 +194,24 @@ namespace Battlesnake {
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
                 score += 9999999;
+            }
+
+            // Fooooooood
+            int foodWeight = 0;
+            if (state.board.food.size() <= 8) {
+                foodWeight = 200 - (2 * state.player.health);
+            } else {
+                if (state.player.health <= 40 || state.player.body.size() < 4) {
+                    foodWeight = 100 - state.player.health;
+                }
+            }
+
+            if (foodWeight > 0) {
+                // for (Point food : state.board.food) {
+                for (int i = 0; i < state.board.food.size(); i++) {
+                    float distance = this->distanceTo(state.player.head, state.board.food[i]);
+                    score = score - (distance * foodWeight) - i;
+                }
             }
 
             // Avoid edge of board
@@ -293,6 +321,12 @@ namespace Battlesnake {
             }
             
             return grid;
+        }
+
+        int Minimax::distanceTo(const Point& src, const Point& dst) const {
+            int dx = std::abs(src.x - dst.x);
+            int dy = std::abs(src.y - dst.y);
+            return dx + dy;
         }
     };
 };

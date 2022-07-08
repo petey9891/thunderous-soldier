@@ -41,6 +41,8 @@ namespace Battlesnake {
             Points neighbors(Point node, Grid grid) const;
             bool isSafeSquare(const BoardElement element, bool failsafe = false) const;
 
+            int distanceTo(const Point& src, const Point& dst) const;
+
         private:
             int m_width;
             int m_height;
