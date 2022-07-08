@@ -103,8 +103,6 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 paranoid.MAX_RECURSION_DEPTH = 4;
             }
 
-            printf("Number of enemies: %d\n, MAX_RECURSION_DEPTH: %d\n", (int) enemies.size(), paranoid.MAX_RECURSION_DEPTH);
-
             Minimax::Grid grid = paranoid.buildWorldMap(board);
             
             // paranoid.printWorldMap(grid);
