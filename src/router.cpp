@@ -13,8 +13,8 @@ using namespace nlohmann;
 using namespace Battlesnake;
 
 // Used to enable debug printouts.
-const bool debug = false;
-const bool print_move = false;
+const bool debug = true;
+const bool print_move = true;
 
 
 namespace Battlesnake {
@@ -97,7 +97,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Minimax::Minimax paranoid(board.width, board.height);
             Minimax::Grid grid = paranoid.buildWorldMap(board);
             
-            // paranoid.printWorldMap(grid);
+            paranoid.printWorldMap(grid);
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
