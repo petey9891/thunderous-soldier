@@ -2,7 +2,7 @@
 #include <iostream>         // std::cout
 #include <limits>           // std::numeric_limits
 #include <algorithm>        // std::max
-
+#include "logging.hpp"
 
 namespace Battlesnake {
     namespace Minimax {
@@ -15,8 +15,8 @@ namespace Battlesnake {
         }
 
         SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, SuggestedMove alpha, SuggestedMove beta, Points prevEnemyMoves) {            
-            // printf("\n[%s]\n", maximizingPlayer ? "Maximizing" : "Minimizing");
-            // printf("Depth: %d\n", depth);
+            LOG(DEBUG, maximizingPlayer ? "[Maximizing]" : "[Minimizing]", true);
+            LOG(DEBUG, "Depth: ", depth);
             Points moves;
             Points playerMoves = this->neighbors(state.player.head, grid);
             
@@ -25,35 +25,38 @@ namespace Battlesnake {
                 moves = playerMoves;
                 enemyMoves = this->neighbors(state.enemies[0].head, grid);
             } else {
-                enemyMoves = prevEnemyMoves;
-                moves = prevEnemyMoves;
+                enemyMoves = this->neighbors(state.enemies[0].head, grid);
+                moves = this->neighbors(state.enemies[0].head, grid);
             }
 
-            if (depth == this->MAX_RECURSION_DEPTH) {
-                // printf("Applying heuristic... returning up the tree\n");
+            if (depth == this->MAX_RECURSION_DEPTH || moves.empty() || state.player.health <= 0 || state.enemies[0].health <= 0) {
+                LOG(DEBUG, "Applying heuristic... returning up the tree");
                 float heuristic = this->heuristic(grid, state, playerMoves, enemyMoves);
                 return { heuristic, { -1, -1 } };
             };
 
-            // printf("Number of nodes: %d\n", (int)moves.size());
-            // printf("Nodes: ");
-            // if (maximizingPlayer) {
-            //     for (Point move: moves) {
-            //         std::cout << this->direction(state.player.head, move) << ' ';
-            //     }
-            //     printf("\n");
-            //     std::cout << "Current position: " << state.player.head;
-            // } else {
-            //     for (Point move: moves) {
-            //         std::cout << this->direction(state.enemies[0].head, move) << ' ';
-            //     }
-            //     printf("\n");
-            //     std::cout << "Current position: " << state.enemies[0].head;
-            // }
+            #if (CURRENT_LOG_LEVEL == DEBUG)
+                LOG(DEBUG, "Number of nodes: ", (int) moves.size());
+                printf("Nodes: ");
+                if (maximizingPlayer) {
+                    for (Point move: moves) {
+                        std::cout << this->direction(state.player.head, move) << ' ';
+                    }
+                    LOG(DEBUG, "\n");
+                    LOG(DEBUG, "Current position: ", state.player.head);
+                } else {
+                    for (Point move: moves) {
+                        std::cout << this->direction(state.enemies[0].head, move) << ' ';
+                    }
+                    LOG(DEBUG, "\n");
+                    LOG(DEBUG, "Current position: ", state.enemies[0].head);
+                }
+
+            #endif
 
             if (maximizingPlayer) {
                 for (Point move : moves) {
-                    // std::cout << "Current move: " << this->direction(state.player.head, move) << std::endl;
+                    LOG(DEBUG, "Current move: ", this->direction(state.player.head, move));
 
                     Grid newGrid = grid;
                     GameState newState = state;
@@ -86,12 +89,15 @@ namespace Battlesnake {
                     newState.player.head = move;
                     newState.player.body.insert(newState.player.body.begin(), move);
 
-                    // this->printWorldMap(newGrid);
-
                     SuggestedMove newAlpha = this->minimax(newGrid, newState, depth + 1, false, alpha, beta, enemyMoves);
 
-                    if (newAlpha.value > alpha.value) {
-                        // std::cout << "Setting alpha move to: " << move;
+                    LOG(DEBUG, "Current alpha value: ", alpha.value);
+                    LOG(DEBUG, "Current alpha move: ", alpha.move);
+                    LOG(DEBUG, "Current newAlpha value: ", newAlpha.value);
+                    LOG(DEBUG, "Current newAlpha move: ", move);
+                    if (newAlpha.value >= alpha.value) {
+                        LOG(DEBUG, "Setting alpha value: ", newAlpha.value);
+                        LOG(DEBUG, "Setting alpha move: ", move);
                         alpha = { newAlpha.value, move };
                     }
 
@@ -102,19 +108,29 @@ namespace Battlesnake {
                 return alpha;
             } else {
                 for (Point move : moves) {
-                    // std::cout << "Current move: " << this->direction(state.enemies[0].head, move) << std::endl;
+                    LOG(DEBUG, "Current move: ", this->direction(state.enemies[0].head, move));
+
                     Grid newGrid = grid;
                     GameState newState = state;
 
+                    bool eating = false;
+                    if (newGrid[move.x][move.y] == BoardElement::food) {
+                        eating = true;
+                        newState.enemies[0].health = 100;
+                    } else {
+                        newState.enemies[0].health -= 1;
+                    }
 
                     const int length = newState.enemies[0].body.size() - 1;
                     const bool growing = length < 2;
                     if (growing) {
                         newGrid[newState.enemies[0].body[length].x][newState.enemies[0].body[length].y] = BoardElement::tail;
                     } else {
-                        newGrid[newState.enemies[0].body[length - 1].x][newState.enemies[0].body[length - 1].y] = BoardElement::tail;
-                        newGrid[newState.enemies[0].body[length].x][newState.enemies[0].body[length].y] = BoardElement::empty;
-                        newState.enemies[0].body.pop_back();
+                        if (!eating) {
+                            newGrid[newState.enemies[0].body[length - 1].x][newState.enemies[0].body[length - 1].y] = BoardElement::tail;
+                            newGrid[newState.enemies[0].body[length].x][newState.enemies[0].body[length].y] = BoardElement::empty;
+                            newState.enemies[0].body.pop_back();    
+                        }
                     }
 
                     // Update snake's head
@@ -125,12 +141,9 @@ namespace Battlesnake {
                     newState.enemies[0].head = move;
                     newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
 
-                    // this->printWorldMap(newGrid);
-
                     SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta, {});
 
-                    if (newBeta.value < beta.value) {
-                        // std::cout << "Setting beta move to: " << move;
+                    if (newBeta.value <= beta.value) {
                         beta = { newBeta.value, move };
                     }
 
@@ -156,8 +169,8 @@ namespace Battlesnake {
             return Direction::INVALID;
         }
 
-        int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {
-            if (this->isSafeSquare(grid[position.x][position.y], failsafe)) {
+        int Minimax::floodFill(const Point& position, Grid& grid, int open) const {
+            if (this->isSafeSquare(grid[position.x][position.y])) {
                 grid[position.x][position.y] = BoardElement::filled;
                 open++;
                 Points neighbors = this->neighbors(position, grid);
@@ -174,11 +187,11 @@ namespace Battlesnake {
             
             // Calculate my score
             if (playerMoves.empty()) {
-                return std::numeric_limits<float>::lowest();
+                return -1.0f;
             }
 
             if (state.player.health <= 0) {
-                return std::numeric_limits<float>::lowest();
+                return -1.0f;
             }
 
             // Head to head collisions
@@ -186,58 +199,62 @@ namespace Battlesnake {
                     state.player.head.y == state.enemies[0].head.y) {
                 // If my health is greater
                 if (state.player.length > state.enemies[0].length) {
-                    return std::numeric_limits<float>::max();
+                    return 1.0f;
                 } else {
-                    return std::numeric_limits<float>::lowest();
+                    return -1.0f;
                 }
             }
 
 
             Grid newGrid = grid;
-            const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
+            const int availableSquares = this->floodFill(state.player.head, newGrid, 0);
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
 
             if (availableSquares <= state.player.length) {
-                return -9999999.0f * (1.0f / percentAvailable);
+                if (percentAvailable == 0) {
+                    // avoid divide by zero
+                    return -0.9;
+                }
+                return -0.9f * (1.0f / percentAvailable);
             }
 
             // Calculate enemy score
             if (enemyMoves.empty()) {
-                score += std::numeric_limits<float>::max();
+                score = 1.0f;
             }
 
             Grid enemyGrid = grid;
-            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0, true);
+            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0);
             const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
-                score += 9999999.0f;
+                score = 1.0f;;
             }
 
             // Fooooooood
-            int foodWeight = 0;
+            float foodWeight = 0.0f;
             if (state.board.food.size() <= 8) {
-                foodWeight = 200 - (2 * state.player.health);
+                foodWeight = (200.0f - (2.0f * (float) state.player.health)) / 100.0f;
             } else {
                 if (state.player.health <= 40 || state.player.body.size() < 4) {
-                    foodWeight = 100 - state.player.health;
+                    foodWeight = (100.0f - (float) state.player.health) / 100.0f;
                 }
             }
 
-            if (foodWeight > 0) {
+            if (foodWeight > 0.0f) {
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
                     score = score - (distance * foodWeight) - i;
                 }
             }
-
+            
             // Avoid edge of board
             if (state.player.head.x == 0 ||
                 state.player.head.x == this->m_width - 1 ||
                 state.player.head.y == 0 ||
                 state.player.head.y == this->m_height - 1
             ) {
-                score -= 25000;
+                score -= 0.25f;
             }
 
             if (score < 0.0f) {
@@ -245,6 +262,7 @@ namespace Battlesnake {
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
             }
+            
             return score;
         }
 
@@ -272,11 +290,8 @@ namespace Battlesnake {
             return moves;
         }
 
-        bool Minimax::isSafeSquare(const BoardElement element, bool failsafe) const {
-            if (failsafe) {
-                return true;
-            }
-            return element == BoardElement::empty || element == BoardElement::food;
+        bool Minimax::isSafeSquare(const BoardElement element) const {
+            return element == BoardElement::empty || element == BoardElement::food || element == BoardElement::tail;
         }
 
         void Minimax::printWorldMap(const Grid& grid) const {

@@ -5,6 +5,7 @@
 #include "http_stuff.h"
 
 #include "router.hpp"
+#include "logging.hpp"
 
 using namespace std;
 using namespace nlohmann;
@@ -16,7 +17,7 @@ int main(void) {
         Net::Router router;
         router.handleRoutes(server);
         
-        cout << "Starting server" << endl;
+        LOG(INFO, "Starting server\n");
         server.listen("0.0.0.0", 8080);
     } catch (std::runtime_error &e) {
         std::cout << "ERROR: " << e.what() << std::endl

@@ -7,15 +7,11 @@
 #include "router.hpp"
 #include "minimax.hpp"
 #include "basic.hpp"
+#include "logging.hpp"
 
 using namespace std;
 using namespace nlohmann;
 using namespace Battlesnake;
-
-// Used to enable debug printouts.
-const bool debug = false;
-const bool print_move = false;
-
 
 namespace Battlesnake {
     void from_json(const json& j, Point& p) {
@@ -78,11 +74,6 @@ void Net::Router::handleRoutes(httplib::Server& server) {
         try {
             json data = json::parse(req.body);
 
-            if (debug) {
-            std::cout << "*************** MOVE ******************" << std::endl;
-            std::cout << data << std::endl;
-            }
-
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
             Snakes enemies;
@@ -96,32 +87,42 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Minimax::GameState state = { board, player, enemies };
 
             Minimax::Minimax paranoid(board.width, board.height);
-
-            if (enemies.size() >= 4) {
-                paranoid.MAX_RECURSION_DEPTH = 1;
-            } else if (enemies.size() >= 2) {
-                paranoid.MAX_RECURSION_DEPTH = 4;
+            
+            if (board.height > 11) {
+                if (enemies.size() >= 2) {
+                    paranoid.MAX_RECURSION_DEPTH = 1;
+                } else if (enemies.size() >= 2) {
+                    paranoid.MAX_RECURSION_DEPTH = 2;
+                } else {
+                    paranoid.MAX_RECURSION_DEPTH = 4;
+                }
+            } else {
+                if (enemies.size() >= 4) {
+                    paranoid.MAX_RECURSION_DEPTH = 1;
+                } else if (enemies.size() >= 2) {
+                    paranoid.MAX_RECURSION_DEPTH = 4;
+                }
             }
 
+            LOG(DEBUG, "MAX_RECURSION_DEPTH: ", paranoid.MAX_RECURSION_DEPTH);
+
             Minimax::Grid grid = paranoid.buildWorldMap(board);
-            
-            // paranoid.printWorldMap(grid);
+
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
                 0, 
                 true,
-                { std::numeric_limits<float>::lowest(), {} },
-                { std::numeric_limits<float>::max(), {} },
+                { -1.0f, {} },
+                { 1.0f, {} },
                 {}
             );
 
             Direction move = paranoid.direction(player.head, moveTest.move);
 
-            if (print_move) {
-                std::cout << "*************** TURN " << data["turn"] << " ******************" << std::endl;
-                std::cout << direction_to_string(move) << endl;
-            }
+            LOG(DEBUG, "[TURN]: ", data["turn"], true);
+            LOG(DEBUG, "Moving to: ", moveTest.move);
+            LOG(DEBUG, "Moving: ", direction_to_string(move));
 
             res.set_content(direction_to_string(move), "text/plain");
         } catch (const std::exception& e) {
