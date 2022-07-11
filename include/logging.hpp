@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <string>
-#include <format>
 
 #include "json.hpp"
 #include "battlesnake.hpp"
