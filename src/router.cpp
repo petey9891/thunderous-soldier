@@ -72,6 +72,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
     server.Post("/move", [](auto &req, auto &res){
         try {
+
             json data = json::parse(req.body);
 
             Board board = data["board"].get<Board>();

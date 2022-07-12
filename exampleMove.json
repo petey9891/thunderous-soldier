@@ -2,8 +2,12 @@
     "board": {
         "food": [
             {
-                "x": 4,
-                "y": 0
+                "x": 7,
+                "y": 8
+            },
+            {
+                "x": 0,
+                "y": 6
             },
             {
                 "x": 5,
@@ -17,31 +21,63 @@
                 "body": [
                     {
                         "x": 5,
-                        "y": 1
+                        "y": 10
+                    },  
+                    {
+                        "x": 5,
+                        "y": 9
                     },
                     {
                         "x": 5,
-                        "y": 1
+                        "y": 8
                     },
                     {
                         "x": 5,
-                        "y": 1
+                        "y": 7
                     }
                 ],
                 "customizations": {
-                    "color": "#888888",
+                    "color": "#df6230",
+                    "head": "sand-worm",
+                    "tail": "round-bum"
+                },
+                "head": {
+                    "x": 5,
+                    "y": 10
+                },
+                "health": 20,
+                "id": "gs_QHGCx9rc7jTqwyrpj8r3hPrK",
+                "latency": "186",
+                "length": 2,
+                "name": "Thunderous Soldier",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 1,
+                        "y": 7
+                    },
+                    {
+                        "x": 1,
+                        "y": 6
+                    }
+                ],
+                "customizations": {
+                    "color": "#e80978",
                     "head": "default",
                     "tail": "default"
                 },
                 "head": {
-                    "x": 5,
-                    "y": 1
+                    "x": 1,
+                    "y": 7
                 },
-                "health": 100,
-                "id": "gs_yDkD4v4Ct3STwVQ7KfdjmCrM",
-                "latency": "",
-                "length": 3,
-                "name": "Thunderous Soldier",
+                "health": 95,
+                "id": "gs_BMPgc9TSxqDtyc449myTM4gC",
+                "latency": "1",
+                "length": 2,
+                "name": "Training Bot 2",
                 "shout": "",
                 "squad": ""
             }
@@ -49,7 +85,7 @@
         "width": 11
     },
     "game": {
-        "id": "a5530815-3f6f-4bf9-8537-dc7e3027e531",
+        "id": "9a8cab2a-e31c-4b52-b46f-73ad77d2ca76",
         "map": "standard",
         "ruleset": {
             "name": "standard",
@@ -74,34 +110,38 @@
         "source": "custom",
         "timeout": 500
     },
-    "turn": 0,
+    "turn": 1,
     "you": {
-        "body": [
+       "body": [
             {
                 "x": 5,
-                "y": 1
+                "y": 10
+            },  
+            {
+                "x": 5,
+                "y": 9
             },
             {
                 "x": 5,
-                "y": 1
+                "y": 8
             },
             {
                 "x": 5,
-                "y": 1
+                "y": 7
             }
         ],
         "customizations": {
-            "color": "#888888",
-            "head": "default",
-            "tail": "default"
+            "color": "#df6230",
+            "head": "sand-worm",
+            "tail": "round-bum"
         },
         "head": {
             "x": 5,
-            "y": 1
+            "y": 10
         },
-        "health": 100,
-        "id": "gs_yDkD4v4Ct3STwVQ7KfdjmCrM",
-        "latency": "",
+        "health": 20,
+        "id": "gs_QHGCx9rc7jTqwyrpj8r3hPrK",
+        "latency": "186",
         "length": 3,
         "name": "Thunderous Soldier",
         "shout": "",

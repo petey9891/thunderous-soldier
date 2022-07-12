@@ -34,7 +34,6 @@ namespace Battlesnake {
 
             Direction direction(const Point& head, const Point& bestMove) const;
 
-        private:
             int floodFill(const Point& position, Grid& grid, int open) const;
             float heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves);
             
