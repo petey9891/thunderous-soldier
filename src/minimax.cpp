@@ -189,14 +189,19 @@ namespace Battlesnake {
         }
 
         float Minimax::heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves) {
+            printf("\n");
             float score = 0.0f;
+
+            printf("Starting score: %f\n", score);
             
             // Calculate my score
             if (playerMoves.empty()) {
+                printf("Player ran out of moves\n");
                 return -1.0f;
             }
 
             if (state.player.health <= 0) {
+                printf("Player ran out of health\n");
                 return -1.0f;
             }
 
@@ -204,9 +209,12 @@ namespace Battlesnake {
             if (state.player.head.x == state.enemies[0].head.x && 
                     state.player.head.y == state.enemies[0].head.y) {
                 // If my health is greater
+                printf("Collision! ");
                 if (state.player.length > state.enemies[0].length) {
+                    printf("player wins!\n");
                     return 1.0f;
                 } else {
+                    printf("player loses.\n");
                     return -1.0f;
                 }
             }
@@ -219,6 +227,7 @@ namespace Battlesnake {
             if (availableSquares <= state.player.length) {
                 if (percentAvailable == 0) {
                     // avoid divide by zero
+                    printf("Avoid divide by zero error\n");
                     return -0.9;
                 }
                 return -0.9f * (1.0f / percentAvailable);
@@ -227,6 +236,7 @@ namespace Battlesnake {
             // Calculate enemy score
             if (enemyMoves.empty()) {
                 score = 1.0f;
+                printf("Enemy is out of moves, score: %f\n", score);
             }
 
             Grid enemyGrid = grid;
@@ -234,31 +244,32 @@ namespace Battlesnake {
             const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
-                score = 1.0f;;
+                score = 1.0f;
+                printf("Enemy is out of available squares, score: %f\n", score);
             }
 
             // Fooooooood
             float foodWeight = 0.0f;
             if (state.board.food.size() <= 8) {
-                printf("Food size <= 8, current score: %f", score);
+                printf("Food size <= 8, current score: %f\n", score);
                 foodWeight = (200.0f - (2.0f * (float) state.player.health)) / 100.0f;
-                printf("Food weight: %f", foodWeight);
+                printf("Food weight: %f\n", foodWeight);
             } else {
                 if (state.player.health <= 40 || state.player.body.size() < 4) {
-                    printf("Health <= 40, current score: %f", score);
+                    printf("Health <= 40, current score: %f\n", score);
                     foodWeight = (100.0f - (float) state.player.health) / 100.0f;
-                    printf("Food weight: %f", foodWeight);
+                    printf("Food weight: %f\n", foodWeight);
                 }
             }
 
             if (foodWeight > 0.0f) {
-                printf("Score before adding distance: %f", score);
+                printf("Score before adding distance: %f\n", score);
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
                     score = score - (distance * foodWeight) - i;
                     printf("Player at (%d, %d), Food at (%d, %d), distance %d, score %f\n",state.player.head.x, state.player.head.y, state.board.food[i].x, state.board.food[i].y, distance, score);
                 }
-                printf("Final food score: %f", score);
+                printf("Final food score: %f\n", score);
             }
 
             
@@ -269,13 +280,18 @@ namespace Battlesnake {
                 state.player.head.y == this->m_height - 1
             ) {
                 score -= 0.25f;
+                printf("Applied boundry weight, score: %f\n", score);
             }
 
             if (score < 0.0f) {
                 score = score * (1.0f / percentAvailable);
+                printf("Score < 0.0f, score: %f\n", score);
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
+                printf("Score > 0.0f, score: %f\n", score);
             }
+
+            printf("Final score: %f\n", score);
             
             return score;
         }
