@@ -64,6 +64,7 @@ namespace Battlesnake {
                     if (newGrid[move.x][move.y] == BoardElement::food) {
                         eating = true;
                         newState.player.health = 100;
+                        newState.player.length += 1;
                     } else {
                         newState.player.health -= 1;
                     }
@@ -115,6 +116,7 @@ namespace Battlesnake {
                     if (newGrid[move.x][move.y] == BoardElement::food) {
                         eating = true;
                         newState.enemies[0].health = 100;
+                        newState.enemies[0].length += 1;
                     } else {
                         newState.enemies[0].health -= 1;
                     }
