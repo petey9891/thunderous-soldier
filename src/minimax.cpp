@@ -156,8 +156,8 @@ namespace Battlesnake {
             return Direction::INVALID;
         }
 
-        int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {
-            if (this->isSafeSquare(grid[position.x][position.y], failsafe)) {
+        int Minimax::floodFill(const Point& position, Grid& grid, int open) const {
+            if (this->isSafeSquare(grid[position.x][position.y])) {
                 grid[position.x][position.y] = BoardElement::filled;
                 open++;
                 Points neighbors = this->neighbors(position, grid);
