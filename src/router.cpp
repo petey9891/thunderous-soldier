@@ -109,6 +109,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             Minimax::Grid grid = paranoid.buildWorldMap(board);
 
+            // paranoid.printWorldMap(grid);
+
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
