@@ -288,7 +288,7 @@ namespace Battlesnake {
             if (failsafe) {
                 return true;
             }
-            return element == BoardElement::empty || element == BoardElement::food;
+            return element == BoardElement::empty || element == BoardElement::food || element == BoardElement::tail;
         }
 
         void Minimax::printWorldMap(const Grid& grid) const {
