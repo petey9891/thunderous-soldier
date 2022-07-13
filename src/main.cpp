@@ -3,6 +3,7 @@
 #include <iostream>
 #include "json.hpp"
 #include "http_stuff.h"
+#include "logging.hpp"
 
 #include "router.hpp"
 #include "logging.hpp"

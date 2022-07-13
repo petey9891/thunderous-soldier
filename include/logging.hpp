@@ -72,16 +72,3 @@ void inline LOG(LogLevel level, std::string message, float value, bool extraSpac
         std::cout << "[" << levelToSring(level) << "] " << message << value << std::endl;
     }
 }
-
-
-// void inline LOG(LogLevel level, std::string format, ...) {
-//     if (validateLog(level)) {
-//         va_list arg;
-//         // std::string logMessage = "["+ levelToSring(level) + "] " + format.c_str();
-//         format.insert(0, "["+ levelToSring(level) + "] ");
-//         va_start(arg, format);
-
-//         vfprintf(stdout, format.c_str(), arg);
-//         va_end(arg);
-//     }
-// }

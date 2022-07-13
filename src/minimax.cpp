@@ -1,7 +1,8 @@
-#include "minimax.hpp"
 #include <iostream>         // std::cout
 #include <limits>           // std::numeric_limits
 #include <algorithm>        // std::max
+
+#include "minimax.hpp"
 #include "logging.hpp"
 
 namespace Battlesnake {
@@ -18,23 +19,19 @@ namespace Battlesnake {
             LOG(DEBUG, maximizingPlayer ? "[Maximizing]" : "[Minimizing]", true);
             LOG(DEBUG, "Depth: ", depth);
 
-            
-            bool isPlayerTailSafe = state.player.length > 3;
-            bool isEnemyTailSafe = state.player.length > 3;
-
             Points moves;
-            Points playerMoves = this->neighbors(state.player.head, grid, isPlayerTailSafe);
+            Points playerMoves = this->neighbors(state.player.head, grid);
             
             Points enemyMoves;
             if (maximizingPlayer) {
                 moves = playerMoves;
-                enemyMoves = this->neighbors(state.enemies[0].head, grid, isEnemyTailSafe);
+                enemyMoves = this->neighbors(state.enemies[0].head, grid);
             } else {
-                enemyMoves = this->neighbors(state.enemies[0].head, grid, isEnemyTailSafe);
-                moves = this->neighbors(state.enemies[0].head, grid, isEnemyTailSafe);
+                enemyMoves = this->neighbors(state.enemies[0].head, grid);
+                moves = this->neighbors(state.enemies[0].head, grid);
             }
 
-            if (depth == this->MAX_RECURSION_DEPTH || moves.empty() || state.player.health <= 0 || state.enemies[0].health <= 0) {
+            if (depth == this->MAX_RECURSION_DEPTH  || moves.empty() || state.player.health <= 0 || state.enemies[0].health <= 0) {
                 LOG(DEBUG, "Applying heuristic... returning up the tree");
                 float heuristic = this->heuristic(grid, state, playerMoves, enemyMoves);
                 return { heuristic, { -1, -1 } };
@@ -101,7 +98,7 @@ namespace Battlesnake {
                     LOG(DEBUG, "Current alpha move: ", alpha.move);
                     LOG(DEBUG, "Current newAlpha value: ", newAlpha.value);
                     LOG(DEBUG, "Current newAlpha move: ", move);
-                    if (newAlpha.value >= alpha.value) {
+                    if (newAlpha.value > alpha.value) {
                         LOG(DEBUG, "Setting alpha value: ", newAlpha.value);
                         LOG(DEBUG, "Setting alpha move: ", move);
                         alpha = { newAlpha.value, move };
@@ -115,7 +112,6 @@ namespace Battlesnake {
             } else {
                 for (Point move : moves) {
                     LOG(DEBUG, "Current move: ", this->direction(state.enemies[0].head, move));
-
                     Grid newGrid = grid;
                     GameState newState = state;
 
@@ -123,6 +119,7 @@ namespace Battlesnake {
                     if (newGrid[move.x][move.y] == BoardElement::food) {
                         eating = true;
                         newState.enemies[0].health = 100;
+                        newState.enemies[0].length += 1;
                     } else {
                         newState.enemies[0].health -= 1;
                     }
@@ -149,7 +146,7 @@ namespace Battlesnake {
 
                     SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta, {});
 
-                    if (newBeta.value <= beta.value) {
+                    if (newBeta.value < beta.value) {
                         beta = { newBeta.value, move };
                     }
 
@@ -175,8 +172,8 @@ namespace Battlesnake {
             return Direction::INVALID;
         }
 
-        int Minimax::floodFill(const Point& position, Grid& grid, int open) const {
-            if (this->isSafeSquare(grid[position.x][position.y])) {
+        int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {
+            if (this->isSafeSquare(grid[position.x][position.y], failsafe)) {
                 grid[position.x][position.y] = BoardElement::filled;
                 open++;
                 Points neighbors = this->neighbors(position, grid);
@@ -214,14 +211,14 @@ namespace Battlesnake {
 
 
             Grid newGrid = grid;
-            const int availableSquares = this->floodFill(state.player.head, newGrid, 0);
+            const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
 
             if (availableSquares <= state.player.length) {
-                if (percentAvailable == 0) {
-                    // avoid divide by zero
-                    return -9999999.0f;
-                }
+                // if (percentAvailable == 0) {
+                //     // avoid divide by zero
+                //     return -9999999.0f;
+                // }
                 return -9999999.0f * (1.0f / percentAvailable);
             }
 
@@ -231,7 +228,7 @@ namespace Battlesnake {
             }
 
             Grid enemyGrid = grid;
-            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0);
+            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0, true);
             const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
@@ -248,7 +245,7 @@ namespace Battlesnake {
                 }
             }
 
-            if (foodWeight > 0.0f) {
+            if (foodWeight > 0) {
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
                     score = score - (distance * foodWeight) - i;
@@ -271,117 +268,9 @@ namespace Battlesnake {
             }
 
             return score;
-    
-    
-    
-            // printf("\n");
-            // float score = 0.0f;
-
-            // printf("Starting score: %f\n", score);
-            
-            // // Calculate my score
-            // if (playerMoves.empty()) {
-            //     printf("Player ran out of moves\n");
-            //     return -1.0f;
-            // }
-
-            // if (state.player.health <= 0) {
-            //     printf("Player ran out of health\n");
-            //     return -1.0f;
-            // }
-
-            // // Head to head collisions
-            // if (state.player.head.x == state.enemies[0].head.x && 
-            //         state.player.head.y == state.enemies[0].head.y) {
-            //     // If my health is greater
-            //     printf("Collision! ");
-            //     if (state.player.length > state.enemies[0].length) {
-            //         printf("player wins!\n");
-            //         return 1.0f;
-            //     } else {
-            //         printf("player loses.\n");
-            //         return -1.0f;
-            //     }
-            // }
-
-
-            // Grid newGrid = grid;
-            // const int availableSquares = this->floodFill(state.player.head, newGrid, 0);
-            // const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
-
-            // if (availableSquares <= state.player.length) {
-            //     if (percentAvailable == 0) {
-            //         // avoid divide by zero
-            //         printf("Avoid divide by zero error\n");
-            //         return -0.9;
-            //     }
-            //     return -0.9f * (1.0f / percentAvailable);
-            // }
-
-            // // Calculate enemy score
-            // if (enemyMoves.empty()) {
-            //     score = 1.0f;
-            //     printf("Enemy is out of moves, score: %f\n", score);
-            // }
-
-            // Grid enemyGrid = grid;
-            // const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0);
-            // const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
-
-            // if (enemyAvailableSquares <= state.enemies[0].length) {
-            //     score = 1.0f;
-            //     printf("Enemy is out of available squares, score: %f\n", score);
-            // }
-
-            // // Fooooooood
-            // float foodWeight = 0.0f;
-            // if (state.board.food.size() <= 8) {
-            //     printf("Food size <= 8, current score: %f\n", score);
-            //     foodWeight = (200.0f - (2.0f * (float) state.player.health)) / 100.0f;
-            //     printf("Food weight: %f\n", foodWeight);
-            // } else {
-            //     if (state.player.health <= 40 || state.player.body.size() < 4) {
-            //         printf("Health <= 40, current score: %f\n", score);
-            //         foodWeight = (100.0f - (float) state.player.health) / 100.0f;
-            //         printf("Food weight: %f\n", foodWeight);
-            //     }
-            // }
-
-            // if (foodWeight > 0.0f) {
-            //     printf("Score before adding distance: %f\n", score);
-            //     for (int i = 0; i < state.board.food.size(); i++) {
-            //         int distance = this->distanceTo(state.player.head, state.board.food[i]);
-            //         score = score - (distance * foodWeight) - i;
-            //         printf("Player at (%d, %d), Food at (%d, %d), distance %d, score %f\n",state.player.head.x, state.player.head.y, state.board.food[i].x, state.board.food[i].y, distance, score);
-            //     }
-            //     printf("Final food score: %f\n", score);
-            // }
-
-            
-            // // Avoid edge of board
-            // if (state.player.head.x == 0 ||
-            //     state.player.head.x == this->m_width - 1 ||
-            //     state.player.head.y == 0 ||
-            //     state.player.head.y == this->m_height - 1
-            // ) {
-            //     score -= 0.25f;
-            //     printf("Applied boundry weight, score: %f\n", score);
-            // }
-
-            // if (score < 0.0f) {
-            //     score = score * (1.0f / percentAvailable);
-            //     printf("Score < 0.0f, score: %f\n", score);
-            // } else if (score > 0.0f) {
-            //     score = score * percentAvailable;
-            //     printf("Score > 0.0f, score: %f\n", score);
-            // }
-
-            // printf("Final score: %f\n", score);
-            
-            // return score;
         }
 
-        Points Minimax::neighbors(Point node, Grid grid, bool isTailSafe) const {
+        Points Minimax::neighbors(Point node, Grid grid) const {
             Points moves;
 
             const Point north (node.x,        node.y + 1);
@@ -389,29 +278,31 @@ namespace Battlesnake {
             const Point east  (node.x + 1,    node.y);
             const Point west  (node.x - 1,    node.y);
 
-            if (north.y >= 0 && north.y < this->m_height && this->isSafeSquare(grid[north.x][north.y], isTailSafe)) {
+            if (north.y >= 0 && north.y < this->m_height && this->isSafeSquare(grid[north.x][north.y])) {
                 moves.push_back(north);
             }
-            if (south.y >= 0 && south.y < this->m_height && this->isSafeSquare(grid[south.x][south.y], isTailSafe)) {
+            if (south.y >= 0 && south.y < this->m_height && this->isSafeSquare(grid[south.x][south.y])) {
                 moves.push_back(south);
             }
-            if (east.x >= 0 && east.x < this->m_width && this->isSafeSquare(grid[east.x][east.y], isTailSafe)) {
+            if (east.x >= 0 && east.x < this->m_width && this->isSafeSquare(grid[east.x][east.y])) {
                 moves.push_back(east);
             }
-            if (west.x >= 0 && west.x < this->m_width && this->isSafeSquare(grid[west.x][west.y], isTailSafe)) {
+            if (west.x >= 0 && west.x < this->m_width && this->isSafeSquare(grid[west.x][west.y])) {
                 moves.push_back(west);
             }
 
             return moves;
         }
 
-        bool Minimax::isSafeSquare(const BoardElement element, bool isTailSafe) const {
-            return element == BoardElement::empty || element == BoardElement::food || (isTailSafe && element == BoardElement::tail);
+        bool Minimax::isSafeSquare(const BoardElement element, bool failsafe) const {
+            if (failsafe) {
+                return true;
+            }
+            return element == BoardElement::empty || element == BoardElement::food || element == BoardElement::tail;
         }
 
         void Minimax::printWorldMap(const Grid& grid) const {
             const int MAX_HEIGHT = this->m_height - 1;
-
             for (int j = 0; j < this->m_height; j++) {
                 for (int i = 0; i < this->m_width; i++) {
                     BoardElement element = grid[i][MAX_HEIGHT - j];
