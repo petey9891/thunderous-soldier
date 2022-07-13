@@ -250,7 +250,7 @@ namespace Battlesnake {
             if (foodWeight > 0.0f) {
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
-                    score = score - (distance * foodWeight) - i;
+                    score = score + (distance * foodWeight) - i;
                 }
             }
             
