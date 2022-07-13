@@ -12,9 +12,9 @@ TEST_SOURCES := $(wildcard $(SRC_DIR)/minimax.cpp)
 TEST_OBJECTS := $(patsubst $(SRC_DIR)/minimax.cpp, $(OBJ_DIR)/minimax.o, $(TEST_SOURCES))
 
 CPPFLAGS :=-Iinclude -MMD -MP
-# CXXFLAGS :=-std=c++17 -O3 
+CXXFLAGS :=-std=c++17 -O3 
 # CXXFLAGS :=-std=c++17 -O0 -glldb
-CXXFLAGS :=-std=c++17 -O0
+# CXXFLAGS :=-std=c++17 -O0
 LDLIBS :=-lpthread
 
 .PHONY: all tests clean
