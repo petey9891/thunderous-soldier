@@ -1,6 +1,7 @@
 #include <iostream>         // std::cout
 #include <limits>           // std::numeric_limits
 #include <algorithm>        // std::max
+#include <cstdlib>
 
 #include "minimax.hpp"
 #include "logging.hpp"
@@ -15,12 +16,12 @@ namespace Battlesnake {
             
         }
 
-        SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, SuggestedMove alpha, SuggestedMove beta, Points prevEnemyMoves) {            
+        SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, SuggestedMove alpha, SuggestedMove beta) {            
             LOG(DEBUG, maximizingPlayer ? "[Maximizing]" : "[Minimizing]", true);
             LOG(DEBUG, "Depth: ", depth);
 
             Points moves;
-            Points playerMoves = this->neighbors(state.player.head, grid);
+           const Points playerMoves = this->neighbors(state.player.head, grid);
             
             Points enemyMoves;
             if (maximizingPlayer) {
@@ -92,7 +93,7 @@ namespace Battlesnake {
                     newState.player.head = move;
                     newState.player.body.insert(newState.player.body.begin(), move);
 
-                    SuggestedMove newAlpha = this->minimax(newGrid, newState, depth + 1, false, alpha, beta, enemyMoves);
+                    SuggestedMove newAlpha = this->minimax(newGrid, newState, depth + 1, false, alpha, beta);
 
                     LOG(DEBUG, "Current alpha value: ", alpha.value);
                     LOG(DEBUG, "Current alpha move: ", alpha.move);
@@ -144,7 +145,7 @@ namespace Battlesnake {
                     newState.enemies[0].head = move;
                     newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
 
-                    SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta, {});
+                    SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta);
 
                     if (newBeta.value < beta.value) {
                         beta = { newBeta.value, move };
@@ -172,7 +173,7 @@ namespace Battlesnake {
             return Direction::INVALID;
         }
 
-        int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {
+        int Minimax::floodFill(const Point& position, Grid& grid, int open, const bool failsafe) const {
             if (this->isSafeSquare(grid[position.x][position.y], failsafe)) {
                 grid[position.x][position.y] = BoardElement::filled;
                 open++;
@@ -185,7 +186,7 @@ namespace Battlesnake {
             return open;
         }
 
-        float Minimax::heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves) {
+        float Minimax::heuristic(Grid grid, const GameState& state, const Points& playerMoves, const Points& enemyMoves) const {
             float score = 0.0f;
 
             
@@ -224,7 +225,7 @@ namespace Battlesnake {
 
             // Calculate enemy score
             if (enemyMoves.empty()) {
-                score += std::numeric_limits<float>::max();
+                score = std::numeric_limits<float>::max();
             }
 
             Grid enemyGrid = grid;
@@ -258,7 +259,7 @@ namespace Battlesnake {
                 state.player.head.y == 0 ||
                 state.player.head.y == this->m_height - 1
             ) {
-                score -= 25000;
+                score -= 25000.0f;
             }
 
             if (score < 0.0f) {
@@ -270,7 +271,7 @@ namespace Battlesnake {
             return score;
         }
 
-        Points Minimax::neighbors(Point node, Grid grid) const {
+        Points Minimax::neighbors(const Point& node, const Grid& grid) const {
             Points moves;
 
             const Point north (node.x,        node.y + 1);
@@ -294,7 +295,7 @@ namespace Battlesnake {
             return moves;
         }
 
-        bool Minimax::isSafeSquare(const BoardElement element, bool failsafe) const {
+        bool Minimax::isSafeSquare(const BoardElement element, const bool failsafe) const {
             if (failsafe) {
                 return true;
             }
@@ -335,7 +336,7 @@ namespace Battlesnake {
             printf("\n");
         }
 
-        Grid Minimax::buildWorldMap(const Board& board) {
+        Grid Minimax::buildWorldMap(const Board& board) const {
             Grid grid(this->m_width, std::vector<BoardElement>(this->m_height, BoardElement::empty));
 
             // Place food

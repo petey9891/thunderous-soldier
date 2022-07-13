@@ -116,8 +116,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 0, 
                 true,
                 { std::numeric_limits<float>::lowest(), {} },
-                { std::numeric_limits<float>::max(), {} },
-                {}
+                { std::numeric_limits<float>::max(), {} }
             );
 
             Direction move = paranoid.direction(player.head, moveTest.move);
