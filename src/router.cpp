@@ -72,6 +72,7 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
     server.Post("/move", [](auto &req, auto &res){
         try {
+            json data = json::parse(req.body);
 
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
@@ -114,8 +115,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 state, 
                 0, 
                 true,
-                { -1.0f, {} },
-                { 1.0f, {} },
+                { std::numeric_limits<float>::lowest(), {} },
+                { std::numeric_limits<float>::max(), {} },
                 {}
             );
 
