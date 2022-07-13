@@ -11,9 +11,9 @@ COMPILED_OBJECTS := $(wildcard $(OBJ_DIR)/*.o)
 CURRENT_DIRECTORY=$(shell pwd)
 
 CPPFLAGS :=-Iinclude -MMD -MP
-# CXXFLAGS :=-std=c++17 -O3 
+CXXFLAGS :=-std=c++17 -O3 
 # CXXFLAGS :=-std=c++17 -O0 -glldb
-CXXFLAGS :=-std=c++17 -O0
+# CXXFLAGS :=-std=c++17 -O0
 LDLIBS :=-lpthread
 
 .PHONY: all clean
