@@ -27,8 +27,8 @@ namespace Battlesnake {
                 moves = playerMoves;
                 enemyMoves = this->neighbors(state.enemies[0].head, grid);
             } else {
-                enemyMoves = prevEnemyMoves;
-                moves = prevEnemyMoves;
+                enemyMoves = this->neighbors(state.enemies[0].head, grid);
+                moves = this->neighbors(state.enemies[0].head, grid);
             }
 
             if (depth == this->MAX_RECURSION_DEPTH) {
