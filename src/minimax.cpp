@@ -31,7 +31,7 @@ namespace Battlesnake {
                 moves = this->neighbors(state.enemies[0].head, grid);
             }
 
-            if (depth == this->MAX_RECURSION_DEPTH) {
+            if (depth == this->MAX_RECURSION_DEPTH  || moves.empty() || state.player.health <= 0 || state.enemies[0].health <= 0) {
                 LOG(DEBUG, "Applying heuristic... returning up the tree");
                 float heuristic = this->heuristic(grid, state, playerMoves, enemyMoves);
                 return { heuristic, { -1, -1 } };
