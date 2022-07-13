@@ -1,8 +1,9 @@
-#include "minimax.hpp"
 #include <iostream>         // std::cout
 #include <limits>           // std::numeric_limits
 #include <algorithm>        // std::max
 
+#include "minimax.hpp"
+#include "logging.hpp"
 
 namespace Battlesnake {
     namespace Minimax {
@@ -15,8 +16,9 @@ namespace Battlesnake {
         }
 
         SuggestedMove Minimax::minimax(Grid& grid, const GameState& state, int depth, bool maximizingPlayer, SuggestedMove alpha, SuggestedMove beta, Points prevEnemyMoves) {            
-            // printf("\n[%s]\n", maximizingPlayer ? "Maximizing" : "Minimizing");
-            // printf("Depth: %d\n", depth);
+            LOG(DEBUG, maximizingPlayer ? "[Maximizing]" : "[Minimizing]", true);
+            LOG(DEBUG, "Depth: ", depth);
+
             Points moves;
             Points playerMoves = this->neighbors(state.player.head, grid);
             
@@ -30,7 +32,7 @@ namespace Battlesnake {
             }
 
             if (depth == this->MAX_RECURSION_DEPTH) {
-                // printf("Applying heuristic... returning up the tree\n");
+                LOG(DEBUG, "Applying heuristic... returning up the tree");
                 float heuristic = this->heuristic(grid, state, playerMoves, enemyMoves);
                 return { heuristic, { -1, -1 } };
             };
@@ -53,7 +55,7 @@ namespace Battlesnake {
 
             if (maximizingPlayer) {
                 for (Point move : moves) {
-                    // std::cout << "Current move: " << this->direction(state.player.head, move) << std::endl;
+                    LOG(DEBUG, "Current move: ", this->direction(state.player.head, move));
 
                     Grid newGrid = grid;
                     GameState newState = state;
@@ -86,12 +88,15 @@ namespace Battlesnake {
                     newState.player.head = move;
                     newState.player.body.insert(newState.player.body.begin(), move);
 
-                    // this->printWorldMap(newGrid);
-
                     SuggestedMove newAlpha = this->minimax(newGrid, newState, depth + 1, false, alpha, beta, enemyMoves);
 
+                    LOG(DEBUG, "Current alpha value: ", alpha.value);
+                    LOG(DEBUG, "Current alpha move: ", alpha.move);
+                    LOG(DEBUG, "Current newAlpha value: ", newAlpha.value);
+                    LOG(DEBUG, "Current newAlpha move: ", move);
                     if (newAlpha.value > alpha.value) {
-                        // std::cout << "Setting alpha move to: " << move;
+                        LOG(DEBUG, "Setting alpha value: ", newAlpha.value);
+                        LOG(DEBUG, "Setting alpha move: ", move);
                         alpha = { newAlpha.value, move };
                     }
 
@@ -102,7 +107,7 @@ namespace Battlesnake {
                 return alpha;
             } else {
                 for (Point move : moves) {
-                    // std::cout << "Current move: " << this->direction(state.enemies[0].head, move) << std::endl;
+                    LOG(DEBUG, "Current move: ", this->direction(state.enemies[0].head, move));
                     Grid newGrid = grid;
                     GameState newState = state;
 
@@ -124,8 +129,6 @@ namespace Battlesnake {
                     newGrid[move.x][move.y] = BoardElement::head;
                     newState.enemies[0].head = move;
                     newState.enemies[0].body.insert(newState.enemies[0].body.begin(), move);
-
-                    // this->printWorldMap(newGrid);
 
                     SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta, {});
 

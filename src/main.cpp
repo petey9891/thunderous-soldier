@@ -3,6 +3,7 @@
 #include <iostream>
 #include "json.hpp"
 #include "http_stuff.h"
+#include "logging.hpp"
 
 #include "router.hpp"
 
@@ -16,7 +17,7 @@ int main(void) {
         Net::Router router;
         router.handleRoutes(server);
         
-        cout << "Starting server" << endl;
+        LOG(INFO, "Starting server\n");
         server.listen("0.0.0.0", 8080);
     } catch (std::runtime_error &e) {
         std::cout << "ERROR: " << e.what() << std::endl
