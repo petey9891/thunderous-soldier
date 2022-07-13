@@ -55,7 +55,15 @@ namespace Battlesnake {
         Index y = 0;
     };
 
-    inline std::ostream & operator<<(std::ostream &os, const Point& point) {
+    inline bool operator==(const Point& lhs, const Point& rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y;
+    };
+
+    inline bool operator!=(const Point& lhs, const Point& rhs) {
+        return lhs.x != rhs.x && lhs.y != rhs.y;
+    };
+
+    inline std::ostream& operator<<(std::ostream &os, const Point& point) {
         os << "x: " << point.x << " y: " << point.y << "\n";
         return os;
     }

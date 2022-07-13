@@ -293,8 +293,8 @@ namespace Battlesnake {
 
         void Minimax::printWorldMap(const Grid& grid) const {
             const int MAX_HEIGHT = this->m_height - 1;
-            for (int j = 0; j < this->m_width; j++) {
-                for (int i = 0; i < this->m_height; i++) {
+            for (int j = 0; j < this->m_height; j++) {
+                for (int i = 0; i < this->m_width; i++) {
                     BoardElement element = grid[i][MAX_HEIGHT - j];
                     switch (element) {
                         case BoardElement::empty:
@@ -333,12 +333,21 @@ namespace Battlesnake {
                 grid[food.x][food.y] = BoardElement::food;
             }
 
+            LOG(DEBUG, "Populated map with food");
+
+            // Place hazards
+            for (Point hazard : board.hazards) {
+                grid[hazard.x][hazard.y] = BoardElement::hazard;
+            }
+
+            LOG(DEBUG, "Populated map with hazards");
+
             // Place snakes
             for (Snake snake : board.snakes) {
                 bool head = true;
                 for (int i = 0; i < snake.body.size(); i++) {
                     Point p = snake.body[i];
-                    if (i == 0) {
+                    if (i == 0 || snake.head == p) {
                         grid[p.x][p.y] = BoardElement::head;
                     } else if (i == snake.body.size() - 1) {
                         grid[p.x][p.y] = BoardElement::tail;
@@ -347,6 +356,8 @@ namespace Battlesnake {
                     }
                 }
             }
+
+            LOG(DEBUG, "Populated map with snakes");
             
             return grid;
         }
