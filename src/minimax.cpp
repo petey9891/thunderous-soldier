@@ -240,19 +240,27 @@ namespace Battlesnake {
             // Fooooooood
             float foodWeight = 0.0f;
             if (state.board.food.size() <= 8) {
+                printf("Food size <= 8, current score: %f", score);
                 foodWeight = (200.0f - (2.0f * (float) state.player.health)) / 100.0f;
+                printf("Food weight: %f", foodWeight);
             } else {
                 if (state.player.health <= 40 || state.player.body.size() < 4) {
+                    printf("Health <= 40, current score: %f", score);
                     foodWeight = (100.0f - (float) state.player.health) / 100.0f;
+                    printf("Food weight: %f", foodWeight);
                 }
             }
 
             if (foodWeight > 0.0f) {
+                printf("Score before adding distance: %f", score);
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
-                    score = score + (distance * foodWeight) - i;
+                    score = score - (distance * foodWeight) - i;
+                    printf("Player at (%d, %d), Food at (%d, %d), distance %d, score %f\n",state.player.head.x, state.player.head.y, state.board.food[i].x, state.board.food[i].y, distance, score);
                 }
+                printf("Final food score: %f", score);
             }
+
             
             // Avoid edge of board
             if (state.player.head.x == 0 ||
