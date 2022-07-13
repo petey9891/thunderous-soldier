@@ -72,7 +72,6 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
     server.Post("/move", [](auto &req, auto &res){
         try {
-            json data = json::parse(req.body);
 
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
@@ -87,7 +86,6 @@ void Net::Router::handleRoutes(httplib::Server& server) {
             Minimax::GameState state = { board, player, enemies };
 
             Minimax::Minimax paranoid(board.width, board.height);
-
             if (board.height > 11) {
                 if (enemies.size() >= 2) {
                     paranoid.MAX_RECURSION_DEPTH = 1;
@@ -103,6 +101,9 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                     paranoid.MAX_RECURSION_DEPTH = 4;
                 }
             }
+            // paranoid.MAX_RECURSION_DEPTH = 1;
+
+            LOG(DEBUG, "MAX_RECURSION_DEPTH: ", paranoid.MAX_RECURSION_DEPTH);
 
             LOG(DEBUG, "MAX_RECURSION_DEPTH: ", paranoid.MAX_RECURSION_DEPTH);
 
@@ -113,8 +114,8 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 state, 
                 0, 
                 true,
-                { std::numeric_limits<float>::lowest(), {} },
-                { std::numeric_limits<float>::max(), {} },
+                { -1.0f, {} },
+                { 1.0f, {} },
                 {}
             );
 

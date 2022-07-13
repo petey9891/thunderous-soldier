@@ -6,6 +6,7 @@
 #include "logging.hpp"
 
 #include "router.hpp"
+#include "logging.hpp"
 
 using namespace std;
 using namespace nlohmann;

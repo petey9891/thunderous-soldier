@@ -37,21 +37,24 @@ namespace Battlesnake {
                 return { heuristic, { -1, -1 } };
             };
 
-            // printf("Number of nodes: %d\n", (int)moves.size());
-            // printf("Nodes: ");
-            // if (maximizingPlayer) {
-            //     for (Point move: moves) {
-            //         std::cout << this->direction(state.player.head, move) << ' ';
+            // #if (CURRENT_LOG_LEVEL == DEBUG)
+            //     LOG(DEBUG, "Number of nodes: ", (int) moves.size());
+            //     printf("[DEBUG] Nodes: ");
+            //     if (maximizingPlayer) {
+            //         for (Point move: moves) {
+            //             std::cout << this->direction(state.player.head, move) << ' ';
+            //         }
+            //         printf("\n");
+            //         LOG(DEBUG, "Current position: ", state.player.head);
+            //     } else {
+            //         for (Point move: moves) {
+            //             std::cout << this->direction(state.enemies[0].head, move) << ' ';
+            //         }
+            //         printf("\n");
+            //         LOG(DEBUG, "Current position: ", state.enemies[0].head);
             //     }
-            //     printf("\n");
-            //     std::cout << "Current position: " << state.player.head;
-            // } else {
-            //     for (Point move: moves) {
-            //         std::cout << this->direction(state.enemies[0].head, move) << ' ';
-            //     }
-            //     printf("\n");
-            //     std::cout << "Current position: " << state.enemies[0].head;
-            // }
+
+            // #endif
 
             if (maximizingPlayer) {
                 for (Point move : moves) {
@@ -143,8 +146,7 @@ namespace Battlesnake {
 
                     SuggestedMove newBeta = this->minimax(newGrid, newState, depth + 1, true, alpha, beta, {});
 
-                    if (newBeta.value < beta.value) {
-                        // std::cout << "Setting beta move to: " << move;
+                    if (newBeta.value <= beta.value) {
                         beta = { newBeta.value, move };
                     }
 
@@ -185,6 +187,7 @@ namespace Battlesnake {
 
         float Minimax::heuristic(Grid grid, const GameState& state, Points playerMoves, Points enemyMoves) {
             float score = 0.0f;
+
             
             // Calculate my score
             if (playerMoves.empty()) {
@@ -208,10 +211,14 @@ namespace Battlesnake {
 
 
             Grid newGrid = grid;
-            const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
+            const int availableSquares = this->floodFill(state.player.head, newGrid, 0);
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
 
             if (availableSquares <= state.player.length) {
+                if (percentAvailable == 0) {
+                    // avoid divide by zero
+                    return -9999999.0f;
+                }
                 return -9999999.0f * (1.0f / percentAvailable);
             }
 
@@ -221,7 +228,7 @@ namespace Battlesnake {
             }
 
             Grid enemyGrid = grid;
-            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0, true);
+            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0);
             const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
@@ -238,13 +245,13 @@ namespace Battlesnake {
                 }
             }
 
-            if (foodWeight > 0) {
+            if (foodWeight > 0.0f) {
                 for (int i = 0; i < state.board.food.size(); i++) {
                     int distance = this->distanceTo(state.player.head, state.board.food[i]);
                     score = score - (distance * foodWeight) - i;
                 }
             }
-
+            
             // Avoid edge of board
             if (state.player.head.x == 0 ||
                 state.player.head.x == this->m_width - 1 ||
@@ -259,10 +266,11 @@ namespace Battlesnake {
             } else if (score > 0.0f) {
                 score = score * percentAvailable;
             }
+
             return score;
         }
 
-        Points Minimax::neighbors(Point node, Grid grid) const {
+        Points Minimax::neighbors(Point node, Grid grid, bool isTailSafe) const {
             Points moves;
 
             const Point north (node.x,        node.y + 1);
@@ -270,16 +278,16 @@ namespace Battlesnake {
             const Point east  (node.x + 1,    node.y);
             const Point west  (node.x - 1,    node.y);
 
-            if (north.y >= 0 && north.y < this->m_height && this->isSafeSquare(grid[north.x][north.y])) {
+            if (north.y >= 0 && north.y < this->m_height && this->isSafeSquare(grid[north.x][north.y], isTailSafe)) {
                 moves.push_back(north);
             }
-            if (south.y >= 0 && south.y < this->m_height && this->isSafeSquare(grid[south.x][south.y])) {
+            if (south.y >= 0 && south.y < this->m_height && this->isSafeSquare(grid[south.x][south.y], isTailSafe)) {
                 moves.push_back(south);
             }
-            if (east.x >= 0 && east.x < this->m_width && this->isSafeSquare(grid[east.x][east.y])) {
+            if (east.x >= 0 && east.x < this->m_width && this->isSafeSquare(grid[east.x][east.y], isTailSafe)) {
                 moves.push_back(east);
             }
-            if (west.x >= 0 && west.x < this->m_width && this->isSafeSquare(grid[west.x][west.y])) {
+            if (west.x >= 0 && west.x < this->m_width && this->isSafeSquare(grid[west.x][west.y], isTailSafe)) {
                 moves.push_back(west);
             }
 
