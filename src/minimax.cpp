@@ -156,8 +156,8 @@ namespace Battlesnake {
             return Direction::INVALID;
         }
 
-        int Minimax::floodFill(const Point& position, Grid& grid, int open) const {
-            if (this->isSafeSquare(grid[position.x][position.y])) {
+        int Minimax::floodFill(const Point& position, Grid& grid, int open, bool failsafe) const {
+            if (this->isSafeSquare(grid[position.x][position.y], failsafe)) {
                 grid[position.x][position.y] = BoardElement::filled;
                 open++;
                 Points neighbors = this->neighbors(position, grid);
@@ -194,7 +194,7 @@ namespace Battlesnake {
 
 
             Grid newGrid = grid;
-            const int availableSquares = this->floodFill(state.player.head, newGrid, 0);
+            const int availableSquares = this->floodFill(state.player.head, newGrid, 0, true);
             const float percentAvailable = (float) availableSquares / (float) (this->m_width * this->m_height);
 
             if (availableSquares <= state.player.length) {
@@ -207,7 +207,7 @@ namespace Battlesnake {
             }
 
             Grid enemyGrid = grid;
-            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0);
+            const int enemyAvailableSquares = this->floodFill(state.enemies[0].head, enemyGrid, 0, true);
             const float enemyPercentAvailable = (float) enemyAvailableSquares / (float) (this->m_width * this->m_height);
 
             if (enemyAvailableSquares <= state.enemies[0].length) {
@@ -272,7 +272,10 @@ namespace Battlesnake {
             return moves;
         }
 
-        bool Minimax::isSafeSquare(const BoardElement element) const {
+        bool Minimax::isSafeSquare(const BoardElement element, bool failsafe) const {
+            if (failsafe) {
+                return true;
+            }
             return element == BoardElement::empty || element == BoardElement::food;
         }
 
