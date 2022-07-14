@@ -102,14 +102,11 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                     paranoid.MAX_RECURSION_DEPTH = 4;
                 }
             }
-            // paranoid.MAX_RECURSION_DEPTH = 1;
-
-            LOG(DEBUG, "MAX_RECURSION_DEPTH: ", paranoid.MAX_RECURSION_DEPTH);
 
             LOG(DEBUG, "MAX_RECURSION_DEPTH: ", paranoid.MAX_RECURSION_DEPTH);
 
             Minimax::Grid grid = paranoid.buildWorldMap(board);
-            
+
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 

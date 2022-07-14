@@ -1,0 +1,322 @@
+{
+    "board": {
+        "food": [
+            {
+                "x": 9,
+                "y": 3
+            },
+            {
+                "x": 9,
+                "y": 5
+            },
+            {
+                "x": 9,
+                "y": 8
+            },
+            {
+                "x": 0,
+                "y": 0
+            },
+            {
+                "x": 0,
+                "y": 3
+            },
+            {
+                "x": 10,
+                "y": 1
+            }
+        ],
+        "hazards": [],
+        "height": 11,
+        "snakes": [
+            {
+                "body": [
+                    {
+                        "x": 8,
+                        "y": 0
+                    },
+                    {
+                        "x": 8,
+                        "y": 1
+                    },
+                    {
+                        "x": 8,
+                        "y": 2
+                    },
+                    {
+                        "x": 8,
+                        "y": 3
+                    },
+                    {
+                        "x": 8,
+                        "y": 4
+                    },  
+                    {
+                        "x": 8,
+                        "y": 5
+                    },
+                    {
+                        "x": 8,
+                        "y": 6
+                    },
+                    {
+                        "x": 8,
+                        "y": 7
+                    },
+                    {
+                        "x": 8,
+                        "y": 8
+                    },  
+                    {
+                        "x": 8,
+                        "y": 9
+                    },
+                    {
+                        "x": 8,
+                        "y": 10
+                    },
+                    {
+                        "x": 7,
+                        "y": 10
+                    },
+                    {
+                        "x": 7,
+                        "y": 9
+                    },
+                    {
+                        "x": 7,
+                        "y": 8
+                    },
+                    {
+                        "x": 7,
+                        "y": 7
+                    },  
+                    {
+                        "x": 7,
+                        "y": 6
+                    },
+                    {
+                        "x": 7,
+                        "y": 5
+                    },
+                    {
+                        "x": 7,
+                        "y": 4
+                    },
+                    {
+                        "x": 7,
+                        "y": 3
+                    },
+                    {
+                        "x": 7,
+                        "y": 2
+                    },
+                    {
+                        "x": 7,
+                        "y": 1
+                    },
+                    {
+                        "x": 7,
+                        "y": 0
+                    }
+                ],
+                "customizations": {
+                    "color": "#df6230",
+                    "head": "sand-worm",
+                    "tail": "round-bum"
+                },
+                "head": {
+                    "x": 8,
+                    "y": 0
+                },
+                "health": 90,
+                "id": "gs_QHGCx9rc7jTqwyrpj8r3hPrK",
+                "latency": "186",
+                "length": 20,
+                "name": "Thunderous Soldier",
+                "shout": "",
+                "squad": ""
+            },
+            {
+                "body": [
+                    {
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "x": 0,
+                        "y": 2
+                    },  
+                    {
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "x": 2,
+                        "y": 1
+                    }
+                ],
+                "customizations": {
+                    "color": "#e80978",
+                    "head": "default",
+                    "tail": "default"
+                },
+                "head": {
+                    "x": 2,
+                    "y": 2
+                },
+                "health": 95,
+                "id": "gs_BMPgc9TSxqDtyc449myTM4gC",
+                "latency": "1",
+                "length": 6,
+                "name": "Training Bot 2",
+                "shout": "",
+                "squad": ""
+            }
+        ],
+        "width": 11
+    },
+    "game": {
+        "id": "9a8cab2a-e31c-4b52-b46f-73ad77d2ca76",
+        "map": "standard",
+        "ruleset": {
+            "name": "standard",
+            "settings": {
+                "foodSpawnChance": 15,
+                "hazardDamagePerTurn": 14,
+                "hazardMap": "",
+                "hazardMapAuthor": "",
+                "minimumFood": 1,
+                "royale": {
+                    "shrinkEveryNTurns": 0
+                },
+                "squad": {
+                    "allowBodyCollisions": false,
+                    "sharedElimination": false,
+                    "sharedHealth": false,
+                    "sharedLength": false
+                }
+            },
+            "version": "v1.1.11"
+        },
+        "source": "custom",
+        "timeout": 500
+    },
+    "turn": 1,
+    "you": {
+        "body": [
+            {
+                "x": 8,
+                "y": 0
+            },
+            {
+                "x": 8,
+                "y": 1
+            },
+            {
+                "x": 8,
+                "y": 2
+            },
+            {
+                "x": 8,
+                "y": 3
+            },
+            {
+                "x": 8,
+                "y": 4
+            },  
+            {
+                "x": 8,
+                "y": 5
+            },
+            {
+                "x": 8,
+                "y": 6
+            },
+            {
+                "x": 8,
+                "y": 7
+            },
+            {
+                "x": 8,
+                "y": 8
+            },  
+            {
+                "x": 8,
+                "y": 9
+            },
+            {
+                "x": 8,
+                "y": 10
+            },
+            {
+                "x": 7,
+                "y": 10
+            },
+            {
+                "x": 7,
+                "y": 9
+            },
+            {
+                "x": 7,
+                "y": 8
+            },
+            {
+                "x": 7,
+                "y": 7
+            },  
+            {
+                "x": 7,
+                "y": 6
+            },
+            {
+                "x": 7,
+                "y": 5
+            },
+            {
+                "x": 7,
+                "y": 4
+            },
+            {
+                "x": 7,
+                "y": 3
+            },
+            {
+                "x": 7,
+                "y": 2
+            },
+            {
+                "x": 7,
+                "y": 1
+            },
+            {
+                "x": 7,
+                "y": 0
+            }
+        ],
+        "customizations": {
+            "color": "#df6230",
+            "head": "sand-worm",
+            "tail": "round-bum"
+        },
+        "head": {
+            "x": 8,
+            "y": 0
+        },
+        "health": 90,
+        "id": "gs_QHGCx9rc7jTqwyrpj8r3hPrK",
+        "latency": "186",
+        "length": 20,
+        "name": "Thunderous Soldier",
+        "shout": "",
+        "squad": ""
+    }
+}
