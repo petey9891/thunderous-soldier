@@ -20,16 +20,19 @@ namespace Battlesnake {
             LOG(DEBUG, maximizingPlayer ? "[Maximizing]" : "[Minimizing]", true);
             LOG(DEBUG, "Depth: ", depth);
 
+            const bool isPlayerTailSafe = state.player.length > 3;
+            const bool isEnemyTailSafe = state.player.length > 3;
+            
             Points moves;
-           const Points playerMoves = this->neighbors(state.player.head, grid);
+            const Points playerMoves = this->neighbors(state.player.head, grid, isPlayerTailSafe);
             
             Points enemyMoves;
             if (maximizingPlayer) {
                 moves = playerMoves;
-                enemyMoves = this->neighbors(state.enemies[0].head, grid);
+                enemyMoves = this->neighbors(state.enemies[0].head, grid, isEnemyTailSafe);
             } else {
-                enemyMoves = this->neighbors(state.enemies[0].head, grid);
-                moves = this->neighbors(state.enemies[0].head, grid);
+                enemyMoves = this->neighbors(state.enemies[0].head, grid, isEnemyTailSafe);
+                moves = this->neighbors(state.enemies[0].head, grid, isEnemyTailSafe);
             }
 
             if (depth == this->MAX_RECURSION_DEPTH  || 
@@ -275,7 +278,7 @@ namespace Battlesnake {
             return score;
         }
 
-        Points Minimax::neighbors(const Point& node, const Grid& grid) const {
+        Points Minimax::neighbors(const Point& node, const Grid& grid, const bool isTailSafe) const {
             Points moves;
 
             const Point north (node.x,        node.y + 1);
@@ -283,27 +286,27 @@ namespace Battlesnake {
             const Point east  (node.x + 1,    node.y);
             const Point west  (node.x - 1,    node.y);
 
-            if (north.y >= 0 && north.y < this->m_height && this->isSafeSquare(grid[north.x][north.y])) {
+            if (north.y >= 0 && north.y < this->m_height && this->isSafeSquare(grid[north.x][north.y], isTailSafe)) {
                 moves.push_back(north);
             }
-            if (south.y >= 0 && south.y < this->m_height && this->isSafeSquare(grid[south.x][south.y])) {
+            if (south.y >= 0 && south.y < this->m_height && this->isSafeSquare(grid[south.x][south.y], isTailSafe)) {
                 moves.push_back(south);
             }
-            if (east.x >= 0 && east.x < this->m_width && this->isSafeSquare(grid[east.x][east.y])) {
+            if (east.x >= 0 && east.x < this->m_width && this->isSafeSquare(grid[east.x][east.y], isTailSafe)) {
                 moves.push_back(east);
             }
-            if (west.x >= 0 && west.x < this->m_width && this->isSafeSquare(grid[west.x][west.y])) {
+            if (west.x >= 0 && west.x < this->m_width && this->isSafeSquare(grid[west.x][west.y], isTailSafe)) {
                 moves.push_back(west);
             }
 
             return moves;
         }
 
-        bool Minimax::isSafeSquare(const BoardElement element, const bool failsafe) const {
+        bool Minimax::isSafeSquare(const BoardElement element, const bool isTailSafe, const bool failsafe) const {
             if (failsafe) {
                 return true;
             }
-            return element == BoardElement::empty || element == BoardElement::food || element == BoardElement::head ||  element == BoardElement::tail;
+            return element == BoardElement::empty || element == BoardElement::food || element == BoardElement::head || (isTailSafe && element == BoardElement::tail);
         }
 
         void Minimax::printWorldMap(const Grid& grid) const {
