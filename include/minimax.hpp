@@ -46,7 +46,7 @@ namespace Battlesnake {
 
         public:
             // int MAX_RECURSION_DEPTH = 8;
-            int MAX_RECURSION_DEPTH = 12;
+            int MAX_RECURSION_DEPTH = 10;
 
         private:
             int m_width;
