@@ -1,8 +1,8 @@
 version: '3.7'
 services:
   api:
-    image: thunder-soldier:latest
-    container_name: thunder-soldier
+    image: thunderous-soldier:latest
+    container_name: thunderous-soldier
     expose:
       - 8095
     environment:
