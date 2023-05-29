@@ -34,10 +34,10 @@ namespace Battlesnake {
 
             Direction direction(const Point& head, const Point& bestMove) const;
 
-            int floodFill(const Point& position, Grid& grid, int open, const bool failsafe = false);
-            float heuristic(Grid grid, const GameState& state, const Points& playerMoves, const Points& enemyMoves);
-            // int floodFill(const Point& position, Grid& grid, int open, const bool failsafe = false) const;
-            // float heuristic(Grid grid, const GameState& state, const Points& playerMoves, const Points& enemyMoves) const;
+            // int floodFill(const Point& position, Grid& grid, int open, const bool failsafe = false);
+            // float heuristic(Grid grid, const GameState& state, const Points& playerMoves, const Points& enemyMoves);
+            int floodFill(const Point& position, Grid& grid, int open, const bool failsafe = false) const;
+            float heuristic(Grid grid, const GameState& state, const Points& playerMoves, const Points& enemyMoves) const;
 
             Points neighbors(const Point& node, const Grid& grid, const bool isTailSafe = true) const;
             bool isSafeSquare(const BoardElement element, const bool isTailSafe = true, const bool failsafe = false) const;
