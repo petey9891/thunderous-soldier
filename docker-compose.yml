@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  api:
+    image: thunder-soldier:latest
+    container_name: thunder-soldier
+    expose:
+      - 8095
+    environment:
+      - VIRTUAL_HOST=snake.octiumlabs.com
+      - VIRTUAL_PORT=8095
+      - LETSENCRYPT_HOST=snake.octiumlabs.com
+      - LETSENCRYPT_EMAIL=16apterson@gmail.com
+    networks:
+      - nginx-proxy
+
+networks:
+  nginx-proxy:
+    name: nginx-proxy
