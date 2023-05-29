@@ -6,9 +6,9 @@ services:
     expose:
       - 8095
     environment:
-      - VIRTUAL_HOST=snake.octiumlabs.com
+      - VIRTUAL_HOST=octiumlabs.com
       - VIRTUAL_PORT=8095
-      - LETSENCRYPT_HOST=snake.octiumlabs.com
+      - LETSENCRYPT_HOST=octiumlabs.com
       - LETSENCRYPT_EMAIL=16apterson@gmail.com
     networks:
       - nginx-proxy
