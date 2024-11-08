@@ -72,3 +72,28 @@ void inline LOG(LogLevel level, std::string message, float value, bool extraSpac
         std::cout << "[" << levelToSring(level) << "] " << message << value << std::endl;
     }
 }
+
+class Stopwatch {
+    public:
+        Stopwatch() = default;
+        ~Stopwatch() = default;
+
+    public:
+        void start() {
+            this->startTime = std::chrono::high_resolution_clock::now();
+        }
+
+        void end() {
+            this->endTime = std::chrono::high_resolution_clock::now();
+        }
+
+        double results(std::string title) {
+            std::chrono::duration<double> elapsed = this->endTime - this->startTime; 
+            std::cout << title << ": " << elapsed.count() * 1000 << " ms\n";
+            return elapsed.count() * 1000.0;
+        }
+
+    private:
+        std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+        std::chrono::time_point<std::chrono::high_resolution_clock> endTime;
+};

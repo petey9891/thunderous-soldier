@@ -1,4 +1,3 @@
-#include <string.h>
 #include <iostream>
 #include <limits>
 
@@ -40,15 +39,15 @@ namespace Battlesnake {
     string direction_to_string(const Direction d) {
         switch(d) {
         case Direction::up:
-            return "{ \"move\": \"up\" }";
+            return R"({ "move": "up" })";
         case Direction::left:
-            return "{ \"move\": \"left\" }";
+            return R"({ "move": "left" })";
         case Direction::down:
-            return "{ \"move\": \"down\" }";
+            return R"({ "move": "down" })";
         case Direction::right:
-            return "{ \"move\": \"right\" }";
+            return R"({ "move": "right" })";
         case Direction::INVALID:
-            return "{ \"move\": \"INVALID\" }";
+            return R"({ "move": "INVALID" })";
         }
     }
 }
@@ -59,34 +58,49 @@ void Net::Router::handleRoutes(httplib::Server& server) {
         string tail = "round-bum";
         string author = "petey9891";
         string color = "#DF6230";
-        res.set_content("{\"apiversion\":\"1\", \"head\":\"" + head + "\", \"tail\":\"" + tail + "\", \"color\":\"" + color + "\", " + "\"author\":\"" + author + "\"}", "application/json");
+        res.set_content(R"({"apiversion":"1", "head":")" + head + R"(", "tail":")" + tail + R"(", "color":")" + color + "\", " + R"("author":")" + author + "\"}", "application/json");
     });
 
-    server.Post("/end", [](const auto &, auto &res){
+    server.Post("/end", [](const auto &, auto &res) {
         res.set_content("ok", "text/plain");
     });
 
-    server.Post("/start", [](const auto &, auto &res){
+    server.Post("/start", [](const auto &, auto &res) {
         res.set_content("ok", "text/plain");
     });
 
-    server.Post("/move", [](auto &req, auto &res){
+    server.Post("/move", [](auto &req, auto &res) {
         try {
+            Stopwatch totalTime = Stopwatch();
+            Stopwatch moveTime = Stopwatch();
+
+            totalTime.start();
+
             json data = json::parse(req.body);
 
             Board board = data["board"].get<Board>();
             Snake player = data["you"].get<Snake>();
             Snakes enemies;
 
+            Minimax::Minimax paranoid(board.width, board.height);
+
             if (board.snakes.size() > 1) {
                 std::copy_if(board.snakes.begin(), board.snakes.end(), std::back_inserter(enemies), [player](Snake snake) { return snake.id != player.id; });
+
+                // Set the closest enemy to my current focus
+                Snake enemy = enemies[0];
+                int shortestDist = paranoid.distanceTo(player.head, enemies[0].head);
+                for (int i = 1; i < enemies.size(); i++) {
+                    int dist = paranoid.distanceTo(player.head, enemies[i].head);
+                    if (dist < shortestDist) {
+                        shortestDist = dist;
+                        enemy = enemies[i];
+                    }
+                }
             } else {
                 enemies.push_back(player);
             }
 
-            Minimax::GameState state = { board, player, enemies };
-
-            Minimax::Minimax paranoid(board.width, board.height);
             if (board.height > 11) {
                 if (enemies.size() >= 2) {
                     paranoid.MAX_RECURSION_DEPTH = 1;
@@ -105,8 +119,13 @@ void Net::Router::handleRoutes(httplib::Server& server) {
 
             LOG(DEBUG, "MAX_RECURSION_DEPTH: ", paranoid.MAX_RECURSION_DEPTH);
 
+            Minimax::GameState state = { board, player, enemies };
+            
             Minimax::Grid grid = paranoid.buildWorldMap(board);
 
+            // paranoid.printWorldMap(grid);
+
+            moveTime.start();
             Minimax::SuggestedMove moveTest = paranoid.minimax(
                 grid, 
                 state, 
@@ -115,12 +134,17 @@ void Net::Router::handleRoutes(httplib::Server& server) {
                 { std::numeric_limits<float>::lowest(), {} },
                 { std::numeric_limits<float>::max(), {} }
             );
+            moveTime.end();
 
             Direction move = paranoid.direction(player.head, moveTest.move);
 
             LOG(DEBUG, "[TURN]: ", data["turn"], true);
             LOG(DEBUG, "Moving to: ", moveTest.move);
             LOG(DEBUG, "Moving: ", direction_to_string(move));
+
+            totalTime.end();
+        
+            moveTime.results("Move time");
 
             res.set_content(direction_to_string(move), "text/plain");
         } catch (const std::exception& e) {
