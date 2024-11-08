@@ -2,41 +2,12 @@
 #include <fstream>
 #include <string>
 
-#include "../include/json.hpp"
 #include "../include/minimax.hpp"
-#include "../include/battlesnake.hpp"
+#include "tests.hpp"
 
 using namespace std;
 using namespace nlohmann;
 using namespace Battlesnake;
-
-
-#define EVAL_LOG() printf(" line: %d", __LINE__);
-
-namespace Battlesnake {
-    void from_json(const json& j, Point& p) {
-        p.x = j["x"].get<Index>();
-        p.y = j["y"].get<Index>();
-    }
-
-    void from_json(const json& j, Snake& s) {
-        s.body = j["body"].get<Points>();
-        s.head = j["head"].get<Point>();
-        s.health = j["health"].get<int>();
-        s.id = j["id"].get<std::string>();
-        s.length = j["length"].get<int>();
-        s.name = j["name"].get<std::string>();
-    }
-
-    void from_json(const json& j, Board& b) {
-        b.height = j["height"].get<int>();
-        b.width = j["width"].get<int>();
-        b.food = j["food"].get<Points>();
-        b.hazards = j["hazards"].get<Points>();
-        b.snakes = j["snakes"].get<Snakes>();
-    }
-}
-
 
 bool TestBuildWorldMap() {
     ifstream i("exampleMove.json");
@@ -93,7 +64,6 @@ void eval(std::string name, bool (*func)()) {
 
 int main(void) {    
     eval("TestBuildWorldMap", &TestBuildWorldMap);
-    
     eval("TestDistanceTo", &TestDistanceTo);
 
     return 0;
