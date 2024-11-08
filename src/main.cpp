@@ -20,7 +20,7 @@ int main(void) {
         
         LOG(INFO, "Starting server\n");
         server.listen("0.0.0.0", 8095);
-        // server.listen("127.0.0.1", 8095);
+
     } catch (std::runtime_error &e) {
         std::cout << "ERROR: " << e.what() << std::endl
                   << "Another instance of this client running?" << std::endl;
